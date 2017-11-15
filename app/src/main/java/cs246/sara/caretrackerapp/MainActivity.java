@@ -203,7 +203,8 @@ public class MainActivity extends AppCompatActivity
             mProgress.hide();
             spreadsheetId = result;
             mOutputText.setText(result);
-            new WriteToSheetTask(mCredential).execute("HEYYYYYY");
+            //TODO: hardcoded, must remove and relocate
+            new WriteToSheetTask(mCredential).execute("testing");
         }
 
         @Override
@@ -255,6 +256,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         private Void writeRowDataToApi(String... values) throws IOException {
+            //TODO: hard-coded must update
             String rowRange = "Sheet1!A2:A2";
             ValueRange data = new ValueRange();
             List<Object> valList = Arrays.asList((Object[])values);
