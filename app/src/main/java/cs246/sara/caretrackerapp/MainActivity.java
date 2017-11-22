@@ -483,6 +483,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    
     /**
      * Display an error dialog showing that Google Play Services is missing
      * or out of date.
