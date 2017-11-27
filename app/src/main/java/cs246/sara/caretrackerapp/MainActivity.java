@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks {
 
     private Button testButton;
+    private Button cameraButton;
 
     //REPLACE WITH CHRISTINA'S PERMANENT SHEET ID
     private static final String pointerSheetId = "1b326p7-twc-D7Opfxgl9wgfBOa0E6-JYwlWhgjf6wqA";
@@ -75,6 +76,25 @@ public class MainActivity extends AppCompatActivity
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
 
+    private void startCamera() {
+        // Get the button for the camera activity
+        cameraButton = (Button) findViewById(R.id.cameraButton);
+
+        // Add event listener (onClick) to the button
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Intent for the calling the new activity
+                Intent cam = new Intent(MainActivity.this, Camera2.class);
+
+                //Start activity
+                startActivity(cam);
+            }
+        });
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +112,9 @@ public class MainActivity extends AppCompatActivity
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+
+        // Remember to start the camera activity call
+        startCamera();
 
 /*   // Restoring buttons with GSON and SharedPreferences
         Gson gson = new Gson();
@@ -113,8 +136,6 @@ public class MainActivity extends AppCompatActivity
         LinearLayout layout = (LinearLayout) findViewById(R.id.testLayout);
         layout.addView(myButt);
 */
-
-
      }
 
     public class ButtonInfo {

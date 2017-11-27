@@ -4,4 +4,5 @@
     <string name="take_a_picture">take a picture</string>
     <string name="server_client_id">148905310426-e3h28vqnj6nu4p6ig5gg060ed3l4p4mr.apps.googleusercontent.com</string>
     <string name="value_input_option">RAW</string>
+    <string name="upload_photo">Upload photo</string>
 </resources>

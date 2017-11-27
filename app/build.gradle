@@ -40,4 +40,6 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
         exclude group: 'com.google.code.findbugs'
     }
+
+    compile 'com.google.android.gms:play-services-drive:11.6.0'
 }
