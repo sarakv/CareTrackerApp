@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:id="@+id/layout_new_button"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:paddingStart="25dp"
+        android:paddingEnd="5dp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="75"
+                android:layout_height="wrap_content">
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tag_color"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="70"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/text_border">
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/user_label"
+                    android:padding="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/label_hint"
+                    android:digits=" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+                    android:maxLength="35"
+                    android:maxLines="1"
+                    android:textSize="14sp"
+                    app:backgroundTint="#00000000"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="wrap_content">
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="25"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/text_border"
+                android:padding="8dp">
+                <com.jaredrummler.android.colorpicker.ColorPanelView
+                    android:id="@+id/color_preview"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_height="match_parent"
+                    app:cpv_borderColor="#00000000"
+                    app:cpv_colorShape="square"/>
+                <ImageView
+                    android:id="@+id/color_dropdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:scaleX="1.6"
+                    android:scaleY="1.6"
+                    android:src="@drawable/ic_arrow_drop_down_black_18dp"
+                    android:tint="#FF336858"
+                    android:contentDescription="@string/color_contentdesc" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="16dp">
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/user_description"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:padding="8dp"
+                android:gravity="top|start"
+                android:hint="@string/descrip_hint"
+                android:background="@drawable/text_border"
+                android:digits=" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+                android:maxLength="200"
+                android:maxLines="1"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

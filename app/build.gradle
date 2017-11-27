@@ -40,4 +40,5 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
         exclude group: 'com.google.code.findbugs'
     }
+    compile 'com.jaredrummler:colorpicker:1.0.1'
 }
