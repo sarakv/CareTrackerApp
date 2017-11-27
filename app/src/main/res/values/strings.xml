@@ -6,6 +6,9 @@
     <string name="value_input_option">RAW</string>
     <string name="label_hint">Enter Label</string>
     <string name="tag_color"> </string>
+    <string name="tutorial">Tutorial</string>
+    <string name="about">About</string>
+    <string name="add_button">Add Activity</string>
     <string name="descrip_hint">Enter Log Description</string>
     <string name="color_contentdesc">button color</string>
 </resources>

@@ -1,17 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_addButton"
-    android:icon="@drawable/ic_note_add_black_24dp"
-    android:title="Add Activity"
-    app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_addButton"
+        android:icon="@drawable/ic_add_white_24dp"
+        android:title="@string/add_button"
+        app:showAsAction="ifRoom" />
 
     <item android:id="@+id/action_tutorial"
-    android:title="Tutorial"
+    android:title="@string/tutorial"
     app:showAsAction="never"/>
 
     <item android:id="@+id/action_about"
-    android:title="About"
+    android:title="@string/about"
         app:showAsAction="never"/>
 
     </menu>
