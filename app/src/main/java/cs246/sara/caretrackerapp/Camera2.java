@@ -23,6 +23,11 @@ public class Camera2 extends AppCompatActivity {
         imgPhoto = (ImageView) findViewById(R.id.photo);
     }
 
+    /**
+     * Takes a photo.
+     *
+     * @param v
+     */
     public void takePhoto(View v) {
         Toast.makeText(this, "clicked", Toast.LENGTH_LONG).show();
 
