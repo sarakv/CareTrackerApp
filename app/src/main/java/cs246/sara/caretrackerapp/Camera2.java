@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class Camera extends AppCompatActivity {
+public class Camera2 extends AppCompatActivity {
 
     public static final int CAMERA_REQUEST = 10;
     private ImageView imgPhoto;
@@ -17,7 +17,7 @@ public class Camera extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_camera2);
 
         // Get access to the image view
         imgPhoto = (ImageView) findViewById(R.id.photo);
