@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:paddingStart="25dp"
+        android:paddingStart="5dp"
         android:paddingEnd="5dp"
         android:orientation="vertical"
         android:layout_height="wrap_content">
@@ -50,13 +50,13 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/user_label"
                     android:padding="8dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/label_hint"
                     android:digits=" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
                     android:maxLength="35"
                     android:maxLines="1"
-                    android:textSize="14sp"
+                    android:textSize="18sp"
                     app:backgroundTint="#00000000"/>
             </LinearLayout>
 
@@ -80,17 +80,19 @@
                     android:layout_weight="1"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
+                    android:onClick="onColorPickListener"
                     android:layout_height="match_parent"
                     app:cpv_borderColor="#00000000"
                     app:cpv_colorShape="square"/>
                 <ImageView
                     android:id="@+id/color_dropdown"
+                    android:onClick="onColorPickListener"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:scaleX="1.6"
                     android:scaleY="1.6"
                     android:src="@drawable/ic_arrow_drop_down_black_18dp"
-                    android:tint="#FF336858"
+                    android:tint="@color/colorGreen0"
                     android:contentDescription="@string/color_contentdesc" />
 
             </LinearLayout>
@@ -114,7 +116,7 @@
                 android:digits=" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
                 android:maxLength="200"
                 android:maxLines="1"
-                android:textSize="14sp" />
+                android:textSize="18sp" />
         </LinearLayout>
 
     </LinearLayout>

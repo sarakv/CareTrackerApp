@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -20,10 +19,9 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -38,9 +36,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.jaredrummler.android.colorpicker.ColorPanelView;
-import com.jaredrummler.android.colorpicker.ColorPickerDialog;
-import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -49,14 +45,17 @@ import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks, ColorPickerDialogListener {
+public class MainActivity extends AppCompatActivity
+        implements EasyPermissions.PermissionCallbacks, View.OnClickListener {
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
+    static final int REQUEST_NEW_BUTTON = 9876;
     static final String SPREADSHEET_ID = "SID";
-    static final String CREDENTIAL = "CRED";
+    static final String NUM_BUTTONS = "!NB#";
+    static final String BUTTON_TAG = "!B#";
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
@@ -65,11 +64,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private static final String pointerSheetId = "1b326p7-twc-D7Opfxgl9wgfBOa0E6-JYwlWhgjf6wqA";
     String spreadsheetId = null;
 
-    ColorPanelView colorPreview = null;
-
     GoogleAccountCredential mCredential;
     String mOutputText;
     ProgressDialog mProgress;
+
+    LinearLayout buttonsLayout = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +79,28 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_addButton:
+                startActivityForResult(new Intent(this, AddButtonActivity.class), REQUEST_NEW_BUTTON);
+                break;
+            case R.id.action_tutorial:
+                break;
+            case R.id.action_about:
+                break;
+            default:
+                super.onOptionsItemSelected(item);
+        }
         return true;
     }
 
@@ -141,8 +157,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      *     activity result.
      */
     @Override
-    protected void onActivityResult(
-            int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
@@ -175,16 +190,36 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     getResultsFromApi();
                 }
                 break;
+            case REQUEST_NEW_BUTTON:
+                spreadsheetId = MyPreferences.getString(this, SPREADSHEET_ID, null);
+                updateUI(spreadsheetId != null);
+                break;
         }
     }
 
     @Override
-    public void onColorSelected(int dialogId, int color) {
-        colorPreview.setColor(color);
-    }
+    public void onClick(View v) {
+        final ButtonInfo info = (ButtonInfo) v.getTag();
+        new AlertDialog.Builder( MainActivity.this )
+                .setTitle("Confirm")
+                .setMessage("Sending action:\n"
+                        + info.label
+                        + ": "
+                        + info.description)
+                .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-    @Override
-    public void onDialogDismissed(int dialogId) {
+                        sendActionToSheet(info.label + ": " + info.description);
+                    }
+                }).show();
+
 
     }
 
@@ -195,88 +230,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-
-    }
-
-    /**
-     * Sign-in button listener
-     * @param v button View
-     */
-    public void onLoginListener(View v) {
-        v.setEnabled(false);
-        mOutputText = "";
-        getResultsFromApi();
-        v.setEnabled(true);
-    }
-
-    public void onAddButtonListener(View v) {
-        final View newButtonLayout = View.inflate(MainActivity.this, R.layout.create_button,(ViewGroup) findViewById(R.id.layout_new_button));
-        Dialog newButtonPrompt = new AlertDialog.Builder(MainActivity.this )
-
-                .setTitle("New Subject")
-                .setView(newButtonLayout)
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        LinearLayout layout = (LinearLayout) findViewById(R.id.layout_buttons);
-                        final String newButtonName = ((EditText) newButtonLayout.findViewById(R.id.user_label)).getText().toString();
-                        final String newButtonDesc = ((EditText) newButtonLayout.findViewById(R.id.user_description)).getText().toString();
-                        if (newButtonName.length() != 0 || newButtonDesc.length() != 0) {
-                            layout.addView(createButton(newButtonName, newButtonDesc, colorPreview.getColor()));
-                            dialog.dismiss();
-                        } else {
-                            //TODO show error
-                        }
-                    }
-                }).show();
-        colorPreview = (ColorPanelView) newButtonPrompt.findViewById(R.id.color_preview);
-        colorPreview.setColor(Color.parseColor("#FFDA8031"));
-        colorPreview.setOnClickListener(new View.OnClickListener() {
+        buttonsLayout = (LinearLayout) findViewById(R.id.layout_buttons);
+        findViewById(R.id.button_signIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ColorPickerDialog.newBuilder().setColor(colorPreview.getColor()).show(MainActivity.this);
+                v.setEnabled(false);
+                mOutputText = "";
+                getResultsFromApi();
+                v.setEnabled(true);
             }
         });
-        newButtonPrompt.findViewById(R.id.color_dropdown).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ColorPickerDialog.newBuilder().setColor(colorPreview.getColor()).show(MainActivity.this);
-            }
-        });
-    }
-
-    private View createButton(String label, String description, int color) {
-        Button newButton = new Button(MainActivity.this);
-        newButton.setText(label);
-        int dpHeight = (int)(getApplicationContext().getResources().getDisplayMetrics().density * 48 +0.5f);
-        int dpMargin = (int)(getApplicationContext().getResources().getDisplayMetrics().density * 8 +0.5f);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpHeight);
-        lp.setMargins(0,dpMargin,0,dpMargin);
-        newButton.setLayoutParams(lp);
-        newButton.setBackgroundColor(color);
-        newButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        newButton.setGravity(Gravity.CENTER);
-        newButton.setTag(description);
-        /* Implement shared preferences
-        FileIO.setInt(MainActivity.this, label + "!c#", color);
-        FileIO.setString(MainActivity.this, "!s#" + Integer.toString(numButtons), label);
-        numButtons++;
-        FileIO.setInt(MainActivity.this, "!ns#", numButtons);
-        */
-        newButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String description = ((Button) v).getTag().toString();
-                sendActionToSheet(description);
-            }
-        });
-        return newButton;
     }
 
     private void sendActionToSheet(String description) {
@@ -307,14 +270,31 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void updateUI(boolean isLoggedIn) {
-        findViewById(R.id.layout_login).setVisibility(View.GONE);
-        findViewById(R.id.layout_main).setVisibility(View.VISIBLE);
-        restoreButtons();
-
+        if (isLoggedIn) {
+            findViewById(R.id.layout_login).setVisibility(View.GONE);
+            findViewById(R.id.layout_main).setVisibility(View.VISIBLE);
+            restoreButtons();
+        } else {
+            findViewById(R.id.layout_main).setVisibility(View.GONE);
+            findViewById(R.id.layout_login).setVisibility(View.VISIBLE);
+        }
     }
 
     private void restoreButtons() {
+        buttonsLayout.removeAllViews();
+        int numButtons = MyPreferences.getInt(this, NUM_BUTTONS, 0);
 
+        for (int i = 0; i < numButtons; i++) {
+            String btnJson = MyPreferences.getString(this, BUTTON_TAG + i, null);
+            if (btnJson != null) {
+                Gson gson = new Gson();
+                Button myButton = gson.fromJson(btnJson, ButtonInfo.class).getButton(this);
+                myButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+
+                myButton.setOnClickListener(this);
+                buttonsLayout.addView(myButton);
+            }
+        }
     }
 
     /**
@@ -452,6 +432,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         protected void onPostExecute(Void v) {
             mProgress.hide();
             spreadsheetId = result;
+            MyPreferences.setString(MainActivity.this, SPREADSHEET_ID, result);
             updateUI(true);
         }
 

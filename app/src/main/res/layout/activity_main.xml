@@ -8,7 +8,7 @@
 
     <RelativeLayout
         android:id="@+id/layout_login"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -16,24 +16,23 @@
             android:id="@+id/button_signIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:onClick="onLoginListener"/>
+            android:layout_centerInParent="true"/>
 
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/layout_main"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="16dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="136dp">
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="68dp">
 
             <ScrollView
                 android:layout_width="match_parent"
@@ -44,37 +43,12 @@
                     android:id="@+id/layout_buttons"
                     android:orientation="vertical"
                     android:layout_margin="16dp"
+                    android:padding="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                 </LinearLayout>
             </ScrollView>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="68dp"
-            android:layout_marginEnd="24dp">
-
-            <android.support.v7.widget.AppCompatButton
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/button_add"
-                android:onClick="onAddButtonListener"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/ic_add_circle_black_48dp"
-                app:backgroundTint="@color/colorAdd"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/add_bg"
-                android:layout_centerInParent="true"/>
 
         </RelativeLayout>
 

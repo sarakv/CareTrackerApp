@@ -11,4 +11,7 @@
     <string name="add_button">Add Activity</string>
     <string name="descrip_hint">Enter Log Description</string>
     <string name="color_contentdesc">button color</string>
+    <string name="title_newAction">New Action</string>
+    <string name="btn_ok">Ok</string>
+    <string name="btn_cancel">Cancel</string>
 </resources>
