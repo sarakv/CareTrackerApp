@@ -79,6 +79,16 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    void onAddNoteListener(View v) {
+        Intent intent = new Intent(this, Note.class);
+        startActivity(intent);
+    }
+
+    void onAddExpenseListener(View v) {
+        Intent intent = new Intent(this, Expense.class);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
