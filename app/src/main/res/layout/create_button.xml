@@ -45,6 +45,10 @@
                 android:layout_weight="70"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:onClick="onLabelLayoutClick"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
+                android:clickable="true"
                 android:background="@drawable/text_border">
 
                 <android.support.v7.widget.AppCompatEditText
@@ -102,6 +106,10 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="onDescLayoutClick"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="12dp"
             android:layout_marginTop="16dp">

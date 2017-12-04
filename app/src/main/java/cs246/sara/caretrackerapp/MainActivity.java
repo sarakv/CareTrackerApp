@@ -16,7 +16,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,9 +37,21 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -58,7 +69,7 @@ public class MainActivity extends AppCompatActivity
     static final String BUTTON_TAG = "!B#";
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
+    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
 
     //REPLACE WITH CHRISTINA'S PERMANENT SHEET ID
     private static final String pointerSheetId = "1b326p7-twc-D7Opfxgl9wgfBOa0E6-JYwlWhgjf6wqA";
@@ -69,6 +80,12 @@ public class MainActivity extends AppCompatActivity
     ProgressDialog mProgress;
 
     LinearLayout buttonsLayout = null;
+
+    String displayName = "";
+
+    boolean isReadyToWrite = false;
+    private int rowNumber = 3;
+    private int inUse = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,12 +227,23 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View v) {
         final ButtonInfo info = (ButtonInfo) v.getTag();
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.US);
+        final String timestamp = sdf.format(new Timestamp(System.currentTimeMillis()));
+        final String user = displayName;
+        final String label = info.label;
+        final String description = info.description;
+        final String convoTo = "";
+        final String convoFrom = "";
+        final String imgLink = "";
+        final String message = displayName + " :: "
+                + timestamp
+                + "\n"
+                + info.label
+                + ": "
+                + info.description;
         new AlertDialog.Builder( MainActivity.this )
                 .setTitle("Confirm")
-                .setMessage("Sending action:\n"
-                        + info.label
-                        + ": "
-                        + info.description)
+                .setMessage("Sending action:\n" + message)
                 .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -226,7 +254,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        sendActionToSheet(info.label + ": " + info.description);
+                        sendActionToSheet(user, timestamp, label, description, convoTo, convoFrom, imgLink);
                     }
                 }).show();
 
@@ -252,8 +280,10 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void sendActionToSheet(String description) {
-
+    private void sendActionToSheet(String... values) {
+        isReadyToWrite = false;
+        new ReadFromSheetTask(1, mCredential).execute("Sheet1!Z1:Z1", spreadsheetId);
+        new WriteToSheetTask(mCredential).execute(values);
     }
 
     /**
@@ -272,11 +302,12 @@ public class MainActivity extends AppCompatActivity
             mOutputText = "No network connection available.";
         } else {
             getSpreadSheetId();
+            new DownloadDisplayName().execute();
         }
     }
 
     private void getSpreadSheetId() {
-        new ReadFromSheetTask(mCredential).execute("Sheet1!A1:A1");
+        new ReadFromSheetTask(mCredential).execute("Sheet1!A1:A1", pointerSheetId);
     }
 
     private void updateUI(boolean isLoggedIn) {
@@ -396,12 +427,13 @@ public class MainActivity extends AppCompatActivity
         return (networkInfo != null && networkInfo.isConnected());
     }
 
-    private class ReadFromSheetTask extends AsyncTask<String, Void, Void> {
+    private class ReadFromSheetTask extends AsyncTask<String, Void, String> {
         private com.google.api.services.sheets.v4.Sheets mService = null;
         private Exception mLastError = null;
-        private String result = null;
+        private int id;
 
         ReadFromSheetTask(GoogleAccountCredential credential) {
+            id = 0;
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
@@ -411,9 +443,20 @@ public class MainActivity extends AppCompatActivity
                     .build();
         }
 
-        protected Void doInBackground(String... params) {
+        ReadFromSheetTask(int callerID, GoogleAccountCredential credential) {
+            id = callerID;
+            HttpTransport transport = AndroidHttp.newCompatibleTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+
+            mService = new com.google.api.services.sheets.v4.Sheets.Builder(
+                    transport, jsonFactory, credential)
+                    .setApplicationName("CareTrackerApp")
+                    .build();
+        }
+
+        protected String doInBackground(String... params) {
             try {
-                return getCellDataFromApi(params[0]);
+                return getCellDataFromApi(params[0], params[1]);
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
@@ -421,34 +464,40 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        private Void getCellDataFromApi(String cell) throws IOException {
+        private String getCellDataFromApi(String cell, String sheetID) throws IOException {
             ValueRange response = mService.spreadsheets().values()
-                    .get(pointerSheetId, cell)
+                    .get(sheetID, cell)
                     .execute();
             List<List<Object>> values = response.getValues();
+            String result = null;
             if (values != null && values.get(0) != null) {
                 result = (String) values.get(0).get(0);
             }
-            return null;
+            return result;
         }
 
         @Override
         protected void onPreExecute() {
             mOutputText = "";
+            inUse++; //TODO gate with semaphore
             mProgress.show();
         }
 
         @Override
-        protected void onPostExecute(Void v) {
-            mProgress.hide();
-            spreadsheetId = result;
-            MyPreferences.setString(MainActivity.this, SPREADSHEET_ID, result);
-            updateUI(true);
+        protected void onPostExecute(String result) {
+            inUse--; //TODO gate with semaphore
+            if (inUse == 0) {
+                mProgress.hide();
+            }
+            handleReadResult(id, result);
         }
 
         @Override
         protected void onCancelled() {
-            mProgress.hide();
+            inUse--; //TODO gate with semaphore
+            if (inUse == 0) {
+                mProgress.hide();
+            }
             if (mLastError != null) {
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
                     showGooglePlayServicesAvailabilityErrorDialog(
@@ -464,6 +513,174 @@ public class MainActivity extends AppCompatActivity
                 }
             } else {
                 mOutputText = "Request cancelled.";
+            }
+        }
+    }
+
+    private void handleReadResult(int callerID, String result) {
+        switch (callerID) {
+            case 0:
+                spreadsheetId = result;
+                MyPreferences.setString(MainActivity.this, SPREADSHEET_ID, result);
+                updateUI(true);
+                break;
+            case 1:
+                rowNumber = Integer.parseInt(result);
+                isReadyToWrite = true;
+                break;
+            default:
+        }
+    }
+
+    private class DownloadDisplayName extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... args) {
+            String response = "";
+            try {
+                URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + mCredential.getToken());
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream content = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader buffer = new BufferedReader(
+                        new InputStreamReader(content));
+                String s = "";
+                while ((s = buffer.readLine()) != null) {
+                    response += s;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                displayName = "";
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            inUse++; //TODO gate with semaphore
+            mProgress.show();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            inUse--; //TODO gate with semaphore
+            if (inUse == 0) {
+                mProgress.hide();
+            }
+            try {
+                JSONObject obj = new JSONObject(result);
+                displayName = (String) obj.get("name");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                displayName = "";
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            inUse--; //TODO gate with semaphore
+            if (inUse == 0) {
+                mProgress.hide();
+            }
+        }
+    }
+
+    private class WriteToSheetTask extends AsyncTask<String, Void, Void> {
+        private com.google.api.services.sheets.v4.Sheets mService = null;
+        private Exception mLastError = null;
+
+        WriteToSheetTask(GoogleAccountCredential credential) {
+            HttpTransport transport = AndroidHttp.newCompatibleTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+
+            mService = new com.google.api.services.sheets.v4.Sheets.Builder(
+                    transport, jsonFactory, credential)
+                    .setApplicationName("CareTrackerApp")
+                    .build();
+        }
+
+        protected Void doInBackground(String... params) {
+            try {
+                return writeRowDataToApi(params);
+            } catch (Exception e) {
+                mLastError = e;
+                cancel(true);
+                return null;
+            }
+        }
+
+        private Void writeRowDataToApi(String... values) throws IOException {
+            int timeOut = 0;
+            while (!isReadyToWrite) {
+                try {
+                    Thread.sleep(200);
+                    timeOut++;
+                    if (timeOut == 25)
+                        return null;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            String rowRange = String.format(Locale.US, "Sheet1!A%d:G%d", rowNumber, rowNumber);
+            List<List<Object>> vals = Arrays.asList(
+                    Arrays.asList(
+                            (Object[])values
+                    )
+            );
+            ValueRange data = new ValueRange();
+            data.setValues(vals);
+            mService.spreadsheets().values().update(spreadsheetId, rowRange, data)
+                    .setValueInputOption(getString(R.string.value_input_option))
+                    .execute();
+            rowRange = "Sheet1!Z1:Z1";
+            rowNumber++;
+            vals = Arrays.asList(
+                    Arrays.asList(
+                            (Object) String.format(Locale.US,"%d", rowNumber)
+                    )
+            );
+            data = new ValueRange();
+            data.setValues(vals);
+            mService.spreadsheets().values().update(spreadsheetId, rowRange, data)
+                    .setValueInputOption(getString(R.string.value_input_option))
+                    .execute();
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            inUse++; //TODO gate with semaphore
+            mProgress.show();
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            inUse--; //TODO gate with semaphore
+            if (inUse == 0) {
+                mProgress.hide();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            inUse--; //TODO gate with semaphore
+            if (inUse == 0) {
+                mProgress.hide();
+            }
+            if (mLastError != null) {
+                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
+                    showGooglePlayServicesAvailabilityErrorDialog(
+                            ((GooglePlayServicesAvailabilityIOException) mLastError)
+                                    .getConnectionStatusCode());
+                } else if (mLastError instanceof UserRecoverableAuthIOException) {
+                    startActivityForResult(
+                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
+                            MainActivity.REQUEST_AUTHORIZATION);
+                } else {
+                    //mOutputText.setText("The following error occurred:\n"
+                  //          + mLastError.getMessage());
+                }
+            } else {
+                //mOutputText.setText("Request cancelled.");
             }
         }
     }
