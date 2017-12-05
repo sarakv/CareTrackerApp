@@ -14,4 +14,10 @@
     <string name="title_newAction">New Action</string>
     <string name="btn_ok">Ok</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="title_expense">Expense Report</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="expense_total">Total</string>
+    <string name="expense_total_hint">Enter Total</string>
+    <string name="label">Label</string>
+    <string name="description">Description</string>
 </resources>

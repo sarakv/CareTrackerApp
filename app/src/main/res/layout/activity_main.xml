@@ -6,23 +6,23 @@
     android:layout_height="match_parent"
     tools:context="cs246.sara.caretrackerapp.MainActivity">
 
-    <RelativeLayout
-        android:id="@+id/layout_login"
-        android:visibility="visible"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!--<RelativeLayout-->
+    <!--android:id="@+id/layout_login"-->
+    <!--android:visibility="visible"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/button_signIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+    <!--<com.google.android.gms.common.SignInButton-->
+        <!--android:id="@+id/button_signIn"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerInParent="true"/>-->
 
-    </RelativeLayout>
+<!--</RelativeLayout>-->
 
     <RelativeLayout
         android:id="@+id/layout_main"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
