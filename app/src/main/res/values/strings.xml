@@ -20,4 +20,9 @@
     <string name="expense_total_hint">Enter Total</string>
     <string name="label">Label</string>
     <string name="description">Description</string>
+    <string name="commTitle">Client Communication</string>
+    <string name="toClientLabel">Communication TO client</string>
+    <string name="toClientLabelHint">Enter what you communicated <u>to the client</u></string>
+    <string name="fromClientLabel">Communication FROM client</string>
+    <string name="fromClientLabelHint">Enter what the client communicated to you</string>
 </resources>

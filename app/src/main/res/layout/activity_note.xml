@@ -7,18 +7,59 @@
     android:orientation="vertical"
     tools:context="cs246.sara.caretrackerapp.Note">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@drawable/ic_note_add_black_24dp"
-        tools:layout_editor_absoluteY="1dp" />
-
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/commTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="This is the Note Activity" />
+        android:text="@string/commTitle"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+    <TextView
+        android:id="@+id/commToClient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/toClientLabel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+    <EditText
+        android:id="@+id/cTOclient"
+        android:layout_width="match_parent"
+        android:layout_height="131dp"
+        android:ems="10"
+        android:hint="@string/toClientLabelHint"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/commFromClient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fromClientLabel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+    <EditText
+        android:id="@+id/cTOclient"
+        android:layout_width="match_parent"
+        android:layout_height="131dp"
+        android:ems="10"
+        android:hint="@string/fromClientLabelHint"
+        android:inputType="textPersonName" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancelComm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_cancel" />
+
+        <Button
+            android:id="@+id/okComm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_ok" />
+    </LinearLayout>
 </LinearLayout>
