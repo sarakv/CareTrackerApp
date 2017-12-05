@@ -5,10 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="8dp"
     tools:context="cs246.sara.caretrackerapp.Note">
 
     <TextView
         android:id="@+id/commTitle"
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/commTitle"
@@ -16,6 +18,7 @@
 
     <TextView
         android:id="@+id/commToClient"
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/toClientLabel"
@@ -23,6 +26,8 @@
 
     <EditText
         android:id="@+id/cTOclient"
+        android:background="@drawable/text_border"
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="131dp"
         android:ems="10"
@@ -31,25 +36,30 @@
 
     <TextView
         android:id="@+id/commFromClient"
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/fromClientLabel"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <EditText
-        android:id="@+id/cTOclient"
+        android:id="@+id/cFROMclient"
+        android:background="@drawable/text_border"
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="131dp"
         android:ems="10"
         android:hint="@string/fromClientLabelHint"
         android:inputType="textPersonName" />
     <LinearLayout
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/cancelComm"
+            android:padding="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -57,6 +67,7 @@
 
         <Button
             android:id="@+id/okComm"
+            android:padding="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
