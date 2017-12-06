@@ -41,4 +41,7 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     }
     compile 'com.jaredrummler:colorpicker:1.0.1'
+
+    // This will take care of the Google Drive API (Pedro)
+    compile 'com.google.android.gms:play-services-drive:11.6.0'
 }
