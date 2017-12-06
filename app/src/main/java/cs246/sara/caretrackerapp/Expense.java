@@ -4,20 +4,18 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 public class Expense extends AppCompatActivity {
-
-    // Get the button for the camera
-    View camButton = findViewById(R.id.imageButton2);
-    private Button camera = (Button) camButton;
-
+    private ImageButton camera = null;
     /**
      *  START CAMERA
      *  Will contain the Camera onClick listener. This method will also
      *  be listed and set inside the onCreate method.
      */
     private void startCamera() {
+        // Get the button for the camera
+        camera = (ImageButton) findViewById(R.id.imageButton2);
 
         // The onClick Listener
         camera.setOnClickListener(new View.OnClickListener() {

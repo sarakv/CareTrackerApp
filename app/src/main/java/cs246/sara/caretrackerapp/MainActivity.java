@@ -25,6 +25,8 @@ import android.widget.LinearLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.drive.Metadata;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -64,12 +66,12 @@ public class MainActivity extends AppCompatActivity
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     static final int REQUEST_NEW_BUTTON = 9876;
-    static final String SPREADSHEET_ID = "SID";
+    static final String SPREADSHEET_ID = "!SID#";
     static final String NUM_BUTTONS = "!NB#";
     static final String BUTTON_TAG = "!B#";
 
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
+    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS, Scopes.PROFILE};
 
     //REPLACE WITH CHRISTINA'S PERMANENT SHEET ID
     private static final String pointerSheetId = "1b326p7-twc-D7Opfxgl9wgfBOa0E6-JYwlWhgjf6wqA";
@@ -96,12 +98,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    void onAddNoteListener(View v) {
+    public void onAddNoteListener(View v) {
         Intent intent = new Intent(this, Note.class);
         startActivity(intent);
     }
 
-    void onAddExpenseListener(View v) {
+    public void onAddExpenseListener(View v) {
         Intent intent = new Intent(this, Expense.class);
         startActivity(intent);
     }
@@ -232,9 +234,9 @@ public class MainActivity extends AppCompatActivity
         final String user = displayName;
         final String label = info.label;
         final String description = info.description;
-        final String convoTo = "";
-        final String convoFrom = "";
-        final String imgLink = "";
+        final String convoTo = "";   //TODO set to correct value
+        final String convoFrom = ""; //TODO set to correct value
+        final String imgLink = "";   //TODO set to correct value
         final String message = displayName + " :: "
                 + timestamp
                 + "\n"
@@ -253,7 +255,6 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton("Send", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
                         sendActionToSheet(user, timestamp, label, description, convoTo, convoFrom, imgLink);
                     }
                 }).show();
