@@ -26,4 +26,6 @@
     <string name="fromClientLabel">Communication FROM client</string>
     <string name="fromClientLabelHint">Enter what the client communicated to you</string>
     <string name="sign_out">Sign out</string>
+    <string name="btn_delete">Delete</string>
+    <string name="title_modify">Modify Action</string>
 </resources>

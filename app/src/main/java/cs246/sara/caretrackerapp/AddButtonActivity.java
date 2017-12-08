@@ -26,6 +26,7 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_button);
+        setTitle(R.string.title_newAction);
         init();
     }
 

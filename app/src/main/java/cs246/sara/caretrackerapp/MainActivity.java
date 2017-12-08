@@ -63,13 +63,16 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity
-        implements EasyPermissions.PermissionCallbacks, View.OnClickListener {
+        implements EasyPermissions.PermissionCallbacks, View.OnClickListener,
+    View.OnLongClickListener {
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     static final int REQUEST_NEW_BUTTON = 9876;
+    static final int REQUEST_MODIFY_BUTTON = 8765;
+    static final String MODIFY_ID = "!MID#";
     static final String DISPLAY_NAME = "!DN#";
     static final String ID_DATE = "!IDD#";
     static final String SPREADSHEET_ID = "!SID#";
@@ -240,6 +243,10 @@ public class MainActivity extends AppCompatActivity
                 spreadsheetId = MyPreferences.getString(this, SPREADSHEET_ID, null);
                 updateUI(spreadsheetId != null);
                 break;
+            case REQUEST_MODIFY_BUTTON:
+                //TODO
+                break;
+            default:
         }
     }
 
@@ -275,6 +282,16 @@ public class MainActivity extends AppCompatActivity
                         sendActionToSheet(user, timestamp, label, description, convoTo, convoFrom, imgLink);
                     }
                 }).show();
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        Intent intent = new Intent(this, ModifyButtonActivity.class);
+        Gson gson = new Gson();
+        String btnJson = gson.toJson((ButtonInfo)v.getTag());
+        intent.putExtra(MODIFY_ID, btnJson);
+        startActivityForResult(intent, REQUEST_MODIFY_BUTTON);
+        return true;
     }
 
     private void init() {
@@ -375,6 +392,7 @@ public class MainActivity extends AppCompatActivity
                 myButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
 
                 myButton.setOnClickListener(this);
+                myButton.setOnLongClickListener(this);
                 buttonsLayout.addView(myButton);
             }
         }
