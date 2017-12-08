@@ -6,7 +6,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 public class ButtonInfo {
-
+    public int id;
     public String label;
     public int color;
     public String description;
