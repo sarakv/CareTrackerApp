@@ -489,6 +489,7 @@ public class MainActivity extends AppCompatActivity
     private class ReadFromSheetTask extends AsyncTask<String, Void, String> {
         private com.google.api.services.sheets.v4.Sheets mService = null;
         private Exception mLastError = null;
+        private boolean isCancelled = false;
         private int id;
         private ProgressDialog mProgress;
 
@@ -546,11 +547,14 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String result) {
             mProgress.dismiss();
-            handleReadResult(id, result);
+            if (!isCancelled) {
+                handleReadResult(id, result);
+            }
         }
 
         @Override
         protected void onCancelled() {
+            isCancelled = true;
             mProgress.dismiss();
             if (mLastError != null) {
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
@@ -610,6 +614,7 @@ public class MainActivity extends AppCompatActivity
                 } catch (Exception e) {
                     displayName = "";
                     cancel(true);
+                    return null;
                 }
             } else {
                 cancel(true);
