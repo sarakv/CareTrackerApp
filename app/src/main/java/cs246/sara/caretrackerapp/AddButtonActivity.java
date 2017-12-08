@@ -45,7 +45,9 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
     }
 
     private void createButton(String label, String desc, int color){
+        int numButtons = MyPreferences.getInt(this, MainActivity.NUM_BUTTONS, 0);
         ButtonInfo newButtonInfo = new ButtonInfo();
+        newButtonInfo.id = numButtons;
         newButtonInfo.label = label;
         newButtonInfo.color = color;
         newButtonInfo.description = desc;
@@ -53,7 +55,6 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
         //newButtonInfo.params.setMargins(0,(int)(getResources().getDisplayMetrics().density * 12 + 0.5f), 0, 0 );
         Gson gson = new Gson();
         String btnJson = gson.toJson(newButtonInfo);
-        int numButtons = MyPreferences.getInt(this, MainActivity.NUM_BUTTONS, 0);
         MyPreferences.setString(this, MainActivity.BUTTON_TAG + numButtons, btnJson);
         numButtons++;
         MyPreferences.setInt(this,MainActivity.NUM_BUTTONS, numButtons);
