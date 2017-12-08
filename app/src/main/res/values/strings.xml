@@ -25,4 +25,5 @@
     <string name="toClientLabelHint">Enter what you communicated <u>to the client</u></string>
     <string name="fromClientLabel">Communication FROM client</string>
     <string name="fromClientLabelHint">Enter what the client communicated to you</string>
+    <string name="sign_out">Sign out</string>
 </resources>
