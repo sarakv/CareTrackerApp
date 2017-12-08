@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
@@ -7,12 +8,19 @@
         android:title="@string/add_button"
         app:showAsAction="ifRoom" />
 
-    <item android:id="@+id/action_tutorial"
-    android:title="@string/tutorial"
-    app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_tutorial"
+        android:title="@string/tutorial"
+        app:showAsAction="never"/>
 
-    <item android:id="@+id/action_about"
-    android:title="@string/about"
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/about"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_signOut"
+        android:title="@string/sign_out"
         app:showAsAction="never"/>
 
     </menu>
