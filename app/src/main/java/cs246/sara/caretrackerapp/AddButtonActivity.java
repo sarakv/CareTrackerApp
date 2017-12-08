@@ -58,7 +58,7 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
         String btnJson = gson.toJson(newButtonInfo);
         MyPreferences.setString(this, MainActivity.BUTTON_TAG + numButtons, btnJson);
         numButtons++;
-        MyPreferences.setInt(this,MainActivity.NUM_BUTTONS, numButtons);
+        MyPreferences.setInt(this, MainActivity.NUM_BUTTONS, numButtons);
     }
 
     private void init() {

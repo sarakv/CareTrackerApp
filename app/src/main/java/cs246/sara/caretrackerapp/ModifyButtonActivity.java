@@ -92,12 +92,14 @@ public class ModifyButtonActivity extends AppCompatActivity implements ColorPick
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteButton();
+                        setResult(Activity.RESULT_OK);
+                        finish();
                     }
                 }).show();
     }
 
     private void deleteButton() {
-        //TODO implement
+        MyPreferences.remove(ModifyButtonActivity.this, MainActivity.BUTTON_TAG + mInfo.id);
     }
 
     public void onCancelListener(View v) {
