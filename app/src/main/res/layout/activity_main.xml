@@ -104,7 +104,7 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/layout_extraButtons"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -114,27 +114,37 @@
 
             <ImageButton
                 android:id="@+id/commButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_alignParentTop="true"
-                android:layout_marginEnd="85dp"
+                android:layout_marginStart="32dp"
                 android:layout_toStartOf="@+id/reportButton"
                 android:background="@null"
                 android:onClick="onAddNoteListener"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reportButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_message_black_24px" />
 
             <ImageButton
                 android:id="@+id/reportButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginEnd="98dp"
+                android:layout_marginEnd="32dp"
                 android:background="@null"
                 android:onClick="onAddExpenseListener"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/commButton"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_description_black_24px" />
 
-        </RelativeLayout>
+        </android.support.constraint.ConstraintLayout>
 
 
     </RelativeLayout>
