@@ -58,8 +58,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="8dp">
 
         <LinearLayout
             android:id="@+id/photoLayout"
@@ -72,17 +72,18 @@
                 android:id="@+id/addPhoto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="8dp"
                 android:text="@string/add_photo"
                 android:textAlignment="center"
-                android:padding="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <ImageButton
                 android:id="@+id/imageButton2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:padding="8dp"
-                app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+                app:srcCompat="@drawable/ic_photo_camera_black_24px" />
 
         </LinearLayout>
 
