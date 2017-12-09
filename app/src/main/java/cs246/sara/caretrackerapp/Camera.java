@@ -37,7 +37,7 @@ import java.io.OutputStream;
 public class Camera extends AppCompatActivity {
 
 
-    private static final String TAG = "drive-quickstart";
+    private static final String TAG = "drive-camera";
     private static final int REQUEST_CODE_SIGN_IN = 0;
     private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
     private static final int REQUEST_CODE_CREATOR = 2;

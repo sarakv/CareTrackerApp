@@ -1,13 +1,18 @@
 package cs246.sara.caretrackerapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+
 public class Expense extends AppCompatActivity {
+
+    // The button for the camera
     private ImageButton camera = null;
+
     /**
      *  START CAMERA
      *  Will contain the Camera onClick listener. This method will also
@@ -28,12 +33,16 @@ public class Expense extends AppCompatActivity {
 
     }
 
+    public void onCancelListener(View v) {
+        // Return to MainActivity
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expense);
-
-        // Remember to initialize the camera function
         startCamera();
     }
 }

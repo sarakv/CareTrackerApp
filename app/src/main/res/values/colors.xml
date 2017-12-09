@@ -7,4 +7,7 @@
     <color type="color" name="colorGreen0">#FF336858</color>
     <color type="color" name="defaultColor">#FFDA8031</color>
     <color type="color" name="white">#FFFFFF</color>
+    <color type="color" name="grey">#6e6e6e</color>
+    <color type="color" name="darkGrey">#464646</color>
+    <color type="color" name="black">#000000</color>
 </resources>

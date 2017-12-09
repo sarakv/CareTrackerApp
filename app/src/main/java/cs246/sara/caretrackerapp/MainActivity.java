@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toolbar;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.common.ConnectionResult;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     static final int REQUEST_NEW_BUTTON = 9876;
     static final int REQUEST_MODIFY_BUTTON = 8765;
+    static final int REQUEST_ABOUT_VIEW = 1004;
     static final String MODIFY_ID = "!MID#";
     static final String DISPLAY_NAME = "!DN#";
     static final String ID_DATE = "!IDD#";
@@ -101,6 +103,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
     }
 
     @Override
@@ -143,6 +147,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.action_about:
                 //TODO
+                startActivityForResult(new Intent(this, About.class), REQUEST_ABOUT_VIEW);
                 break;
             case R.id.action_signOut:
                 mCredential.setSelectedAccount(null);
