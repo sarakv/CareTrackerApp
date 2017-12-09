@@ -23,4 +23,9 @@ public class ExampleInstrumentedTest {
 
         assertEquals("cs246.sara.caretrackerapp", appContext.getPackageName());
     }
+
+    @Test
+    public void testStuff() throws Exception {
+
+    }
 }

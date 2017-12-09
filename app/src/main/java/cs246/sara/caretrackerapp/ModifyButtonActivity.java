@@ -99,7 +99,7 @@ public class ModifyButtonActivity extends AppCompatActivity implements ColorPick
     }
 
     private void deleteButton() {
-        MyPreferences.remove(ModifyButtonActivity.this, MainActivity.BUTTON_TAG + mInfo.id);
+        MyPreferences.remove(ModifyButtonActivity.this, MainActivity.BUTTON_TAG + mInfo.getId());
     }
 
     public void onCancelListener(View v) {
@@ -117,10 +117,10 @@ public class ModifyButtonActivity extends AppCompatActivity implements ColorPick
         Gson gson = new Gson();
         mInfo = gson.fromJson(mButton, ButtonInfo.class);
         colorPreview = (ColorPanelView) findViewById(R.id.color_preview);
-        colorPreview.setColor(mInfo.color);
-        ((EditText) findViewById(R.id.user_label)).setText(mInfo.label);
+        colorPreview.setColor(mInfo.getColor());
+        ((EditText) findViewById(R.id.user_label)).setText(mInfo.getLabel());
         EditText desc = (EditText) findViewById(R.id.user_description);
-        desc.setText(mInfo.description);
+        desc.setText(mInfo.getDescription());
         desc.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -149,11 +149,11 @@ public class ModifyButtonActivity extends AppCompatActivity implements ColorPick
 
     //TODO update
     private void modifyButton(String label, String desc, int color){
-        mInfo.label = label;
-        mInfo.color = color;
-        mInfo.description = desc;
+        mInfo.setLabel(label);
+        mInfo.setColor(color);
+        mInfo.setDescription(desc);
         Gson gson = new Gson();
         String btnJson = gson.toJson(mInfo);
-        MyPreferences.setString(this, MainActivity.BUTTON_TAG + mInfo.id, btnJson);
+        MyPreferences.setString(this, MainActivity.BUTTON_TAG + mInfo.getId(), btnJson);
     }
 }
