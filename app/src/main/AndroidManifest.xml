@@ -22,12 +22,16 @@
         </activity>
         <activity
             android:name=".AddButtonActivity"
+            android:label="@string/add_button"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".Note"
+            android:label="@string/commTitle"
             android:parentActivityName=".MainActivity"/>
         <activity android:name=".Expense"
+            android:label="@string/title_expense"
             android:parentActivityName=".MainActivity"/>
-        <activity android:name=".Camera" />
+        <activity android:name=".Camera"
+            android:label="@string/cameraTitle"/>
         <activity
             android:name=".ModifyButtonActivity"
             android:parentActivityName=".MainActivity"/>

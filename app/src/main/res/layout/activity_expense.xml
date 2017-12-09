@@ -101,6 +101,9 @@
             android:layout_weight="1"
             android:onClick="onCancelListener"
             android:padding="8dp"
+            android:textSize="20sp"
+            android:textColor="@color/colorGreen0"
+            android:background="@android:color/transparent"
             android:text="@string/btn_cancel" />
 
         <Button
@@ -110,6 +113,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="8dp"
+            android:textSize="20sp"
+            android:textColor="@color/colorGreen0"
+            android:background="@android:color/transparent"
             android:text="@string/btn_ok" />
     </LinearLayout>
 
