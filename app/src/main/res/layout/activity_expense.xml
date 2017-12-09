@@ -63,7 +63,7 @@
 
         <LinearLayout
             android:id="@+id/photoLayout"
-            android:layout_width="116dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="8dp">
@@ -83,34 +83,6 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/totalLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/Total"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:padding="8dp"
-                android:text="@string/expense_total"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-            <EditText
-                android:id="@+id/enterTotal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/text_border"
-                android:ems="10"
-                android:hint="@string/expense_total_hint"
-                android:inputType="numberDecimal"
-                android:padding="8dp" />
 
         </LinearLayout>
 

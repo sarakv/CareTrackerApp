@@ -22,9 +22,9 @@
     <string name="description">Description</string>
     <string name="commTitle">Client Communication</string>
     <string name="toClientLabel">Communication TO client</string>
-    <string name="toClientLabelHint">Enter what you said <u>to the client</u></string>
+    <string name="toClientLabelHint">Enter what <u>you said</u> to the client</string>
     <string name="fromClientLabel">Communication FROM client</string>
-    <string name="fromClientLabelHint">Enter what the client said to you</string>
+    <string name="fromClientLabelHint">Enter what the <u>client said</u> to you</string>
     <string name="sign_out">Sign out</string>
     <string name="btn_delete">Delete</string>
     <string name="title_modify">Modify Action</string>
