@@ -109,6 +109,30 @@ public class MainActivity extends AppCompatActivity
         init();
     }
 
+    /**
+     * The About AlertDialog
+     */
+    public void aboutDialog() {
+        // Start the Alert Dialog
+        AlertDialog.Builder about = new AlertDialog.Builder(this);
+
+        // Set The alert box
+        about.setTitle("About")
+             .setMessage("This app was created by Sara Olivero, Scott Tolman and Pedro Lago." +
+                     "It is designed to help Christina and Tom during their day")
+             .setCancelable(true)
+             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                 @Override
+                 public void onClick(DialogInterface dialog, int which) {
+                     // Close the alert
+                 }
+             });
+        // Display the alert
+        AlertDialog alertDialog = about.create();
+        alertDialog.show();
+
+    }
+
     public void onAddNoteListener(View v) {
         Intent intent = new Intent(this, Note.class);
         startActivityForResult(intent, REQUEST_DATA);
@@ -142,8 +166,8 @@ public class MainActivity extends AppCompatActivity
                 //TODO
                 break;
             case R.id.action_about:
-                //TODO
-                startActivityForResult(new Intent(this, About.class), REQUEST_ABOUT_VIEW);
+                // Alert dialog for the About information
+                aboutDialog();
                 break;
             case R.id.action_signOut:
                 mCredential.setSelectedAccount(null);
