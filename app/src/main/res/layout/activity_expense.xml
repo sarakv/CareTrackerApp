@@ -133,6 +133,7 @@
 
         <Button
             android:id="@+id/okExpense"
+            android:onClick="onOkClick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

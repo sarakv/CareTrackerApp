@@ -63,7 +63,7 @@ public class ModifyButtonActivity extends AppCompatActivity implements ColorPick
         if (newButtonName.length() != 0 || newButtonDesc.length() != 0) {
             modifyButton(newButtonName, newButtonDesc, newButtonColor);
             // Return to MainActivity
-            setResult(Activity.RESULT_OK);
+            setResult(RESULT_OK);
             finish();
         } else {
             new AlertDialog.Builder( ModifyButtonActivity.this )
@@ -92,7 +92,7 @@ public class ModifyButtonActivity extends AppCompatActivity implements ColorPick
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteButton();
-                        setResult(Activity.RESULT_OK);
+                        setResult(RESULT_OK);
                         finish();
                     }
                 }).show();
@@ -104,7 +104,7 @@ public class ModifyButtonActivity extends AppCompatActivity implements ColorPick
 
     public void onCancelListener(View v) {
         // Return to MainActivity
-        setResult(Activity.RESULT_CANCELED);
+        setResult(RESULT_CANCELED);
         finish();
     }
 

@@ -101,11 +101,11 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
         final String newButtonDesc = ((EditText) findViewById(R.id.user_description)).getText().toString();
         final int newButtonColor = colorPreview.getColor();
 
-        if (newButtonName.length() != 0 || newButtonDesc.length() != 0) {
+        if (newButtonName.length() != 0 && newButtonDesc.length() != 0) {
             //TODO store button info
             createButton(newButtonName, newButtonDesc, newButtonColor);
             // Return to MainActivity
-            setResult(Activity.RESULT_OK);
+            setResult(RESULT_OK);
             finish();
         } else {
             new AlertDialog.Builder( AddButtonActivity.this )
@@ -122,7 +122,7 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
 
     public void onCancelListener(View v) {
         // Return to MainActivity
-        setResult(Activity.RESULT_CANCELED);
+        setResult(RESULT_CANCELED);
         finish();
     }
 

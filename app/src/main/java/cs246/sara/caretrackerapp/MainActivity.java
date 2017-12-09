@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -23,13 +22,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toolbar;
 
-import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.Scopes;
-import com.google.android.gms.drive.Metadata;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -71,9 +67,11 @@ public class MainActivity extends AppCompatActivity
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-    static final int REQUEST_NEW_BUTTON = 9876;
-    static final int REQUEST_MODIFY_BUTTON = 8765;
     static final int REQUEST_ABOUT_VIEW = 1004;
+    static final int REQUEST_NEW_BUTTON = 1005;
+    static final int REQUEST_MODIFY_BUTTON = 1006;
+    static final int REQUEST_DATA = 1007;
+    static final String SHEET_DATA = "!SD#";
     static final String MODIFY_ID = "!MID#";
     static final String DISPLAY_NAME = "!DN#";
     static final String ID_DATE = "!IDD#";
@@ -103,8 +101,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
     }
 
     @Override
@@ -115,12 +111,12 @@ public class MainActivity extends AppCompatActivity
 
     public void onAddNoteListener(View v) {
         Intent intent = new Intent(this, Note.class);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_DATA);
     }
 
     public void onAddExpenseListener(View v) {
         Intent intent = new Intent(this, Expense.class);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_DATA);
     }
 
     @Override
@@ -245,11 +241,21 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case REQUEST_NEW_BUTTON:
-                spreadsheetId = MyPreferences.getString(this, SPREADSHEET_ID, null);
-                updateUI(spreadsheetId != null);
+                if (resultCode == RESULT_OK) {
+                    spreadsheetId = MyPreferences.getString(this, SPREADSHEET_ID, null);
+                    updateUI(spreadsheetId != null);
+                }
                 break;
             case REQUEST_MODIFY_BUTTON:
-                //TODO
+                // intentionally empty
+                break;
+            case REQUEST_DATA:
+                if (resultCode == RESULT_OK) {
+                    String dataJson = data.getStringExtra(SHEET_DATA);
+                    Gson gson = new Gson();
+                    SheetData sheetData = gson.fromJson(dataJson, SheetData.class);
+                    sendActionToSheet(sheetData);
+                }
                 break;
             default:
         }
@@ -259,19 +265,14 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View v) {
         final ButtonInfo info = (ButtonInfo) v.getTag();
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.US);
-        final String timestamp = sdf.format(new Timestamp(System.currentTimeMillis()));
-        final String user = displayName;
-        final String label = info.label;
-        final String description = info.description;
-        final String convoTo = "";   //TODO set to correct value
-        final String convoFrom = ""; //TODO set to correct value
-        final String imgLink = "";   //TODO set to correct value
-        final String message = displayName + " :: "
-                + timestamp
+        final SheetData data = new SheetData(displayName, sdf.format(new Timestamp(System.currentTimeMillis())),
+        info.label, info.description, "", "", "");
+        final String message = data.user + " :: "
+                + data.timestamp
                 + "\n"
-                + info.label
+                + data.label
                 + ": "
-                + info.description;
+                + data.description;
         new AlertDialog.Builder( MainActivity.this )
                 .setTitle("Confirm")
                 .setMessage("Sending action:\n" + message)
@@ -284,7 +285,7 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton("Send", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        sendActionToSheet(user, timestamp, label, description, convoTo, convoFrom, imgLink);
+                        sendActionToSheet(data);
                     }
                 }).show();
     }
@@ -338,8 +339,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void sendActionToSheet(String... values) {
-        vals = values;
+    private void sendActionToSheet(SheetData data) {
+        vals = data.getValues();
         new ReadFromSheetTask(1, mCredential).execute("Sheet1!Z1:Z1", spreadsheetId);
     }
 
