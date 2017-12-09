@@ -31,6 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="131dp"
         android:ems="10"
+        android:gravity="top|start"
         android:hint="@string/toClientLabelHint"
         android:inputType="textPersonName" />
 
@@ -49,6 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="131dp"
         android:ems="10"
+        android:gravity="top|start"
         android:hint="@string/fromClientLabelHint"
         android:inputType="textPersonName" />
     <LinearLayout

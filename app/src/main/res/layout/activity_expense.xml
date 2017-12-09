@@ -49,6 +49,7 @@
         android:layout_height="123dp"
         android:background="@drawable/text_border"
         android:ems="10"
+        android:gravity="top|start"
         android:hint="@string/descrip_hint"
         android:inputType="textPersonName"
         android:padding="8dp"
