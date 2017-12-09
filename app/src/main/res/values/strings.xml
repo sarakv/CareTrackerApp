@@ -29,5 +29,5 @@
     <string name="btn_delete">Delete</string>
     <string name="title_modify">Modify Action</string>
     <string name="textview">TextView</string>
-    <string name="this_app_was_created_by_sara_olivero_scott_tolman_and_pedro_lago_it_is_designed_to_help_christina_and_tom_during_their_day">This app was created by Sara Olivero, Scott Tolman and Pedro Lago. It is designed to help Christina and Tom during their day.</string>
+    <string name="about_text">This app was created by Sara Olivero, Scott Tolman and Pedro Lago. It is designed to help Christina and Tom during their day.</string>
 </resources>

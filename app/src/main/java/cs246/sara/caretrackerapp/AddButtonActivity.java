@@ -1,6 +1,5 @@
 package cs246.sara.caretrackerapp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.content.ContextCompat;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -48,12 +46,11 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
     private void createButton(String label, String desc, int color){
         int numButtons = MyPreferences.getInt(this, MainActivity.NUM_BUTTONS, 0);
         ButtonInfo newButtonInfo = new ButtonInfo();
-        newButtonInfo.id = numButtons;
-        newButtonInfo.label = label;
-        newButtonInfo.color = color;
-        newButtonInfo.description = desc;
-        newButtonInfo.params = (LinearLayout.LayoutParams) ((Button)findViewById(R.id.btn_newBtn)).getLayoutParams();
-        //newButtonInfo.params.setMargins(0,(int)(getResources().getDisplayMetrics().density * 12 + 0.5f), 0, 0 );
+        newButtonInfo.setId(numButtons);
+        newButtonInfo.setLabel(label);
+        newButtonInfo.setColor(color);
+        newButtonInfo.setDescription(desc);
+        newButtonInfo.setParams((LinearLayout.LayoutParams) (findViewById(R.id.btn_newBtn)).getLayoutParams());
         Gson gson = new Gson();
         String btnJson = gson.toJson(newButtonInfo);
         MyPreferences.setString(this, MainActivity.BUTTON_TAG + numButtons, btnJson);

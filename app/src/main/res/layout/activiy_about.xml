@@ -12,6 +12,6 @@
         android:layout_centerVertical="true"
         android:padding="8px"
         android:textColor="@color/black"
-        android:text="@string/this_app_was_created_by_sara_olivero_scott_tolman_and_pedro_lago_it_is_designed_to_help_christina_and_tom_during_their_day"
+        android:text="@string/about_text"
         android:textAlignment="center" />
 </RelativeLayout>

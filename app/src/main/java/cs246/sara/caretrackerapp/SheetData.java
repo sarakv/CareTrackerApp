@@ -1,13 +1,13 @@
 package cs246.sara.caretrackerapp;
 
 public class SheetData {
-    public String user;
-    public String timestamp;
-    public String label;
-    public String description;
-    public String saidToClient;
-    public String clientSaid;
-    public String imgLink;
+    private String user;
+    private String timestamp;
+    private String label;
+    private String description;
+    private String saidToClient;
+    private String clientSaid;
+    private String imgLink;
 
     public SheetData() {
         //intentionally empty for Gson compatibility
@@ -31,5 +31,61 @@ public class SheetData {
     private String[] toArray(String... vals) {
         String[] values = vals;
         return values;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getSaidToClient() {
+        return saidToClient;
+    }
+
+    public void setSaidToClient(String saidToClient) {
+        this.saidToClient = saidToClient;
+    }
+
+    public String getClientSaid() {
+        return clientSaid;
+    }
+
+    public void setClientSaid(String clientSaid) {
+        this.clientSaid = clientSaid;
+    }
+
+    public String getImgLink() {
+        return imgLink;
+    }
+
+    public void setImgLink(String imgLink) {
+        this.imgLink = imgLink;
     }
 }

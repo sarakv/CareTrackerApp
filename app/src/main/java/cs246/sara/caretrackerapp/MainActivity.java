@@ -266,13 +266,13 @@ public class MainActivity extends AppCompatActivity
         final ButtonInfo info = (ButtonInfo) v.getTag();
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.US);
         final SheetData data = new SheetData(displayName, sdf.format(new Timestamp(System.currentTimeMillis())),
-        info.label, info.description, "", "", "");
-        final String message = data.user + " :: "
-                + data.timestamp
+        info.getLabel(), info.getDescription(), "", "", "");
+        final String message = data.getUser() + " :: "
+                + data.getTimestamp()
                 + "\n"
-                + data.label
+                + data.getLabel()
                 + ": "
-                + data.description;
+                + data.getDescription();
         new AlertDialog.Builder( MainActivity.this )
                 .setTitle("Confirm")
                 .setMessage("Sending action:\n" + message)
