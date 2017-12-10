@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -27,6 +26,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import com.google.gson.Gson;
 
@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -42,7 +43,6 @@ public class Expense extends AppCompatActivity {
     // The button for the camera
     private ImageButton camera = null;
     private java.io.File imageToSave = null;
-    private Bitmap thumbnail = null;
     private Intent resultIntent = null;
     private SheetData sheetData = null;
     private String imgTimeStamp = null;
@@ -217,6 +217,18 @@ public class Expense extends AppCompatActivity {
             String filename = sheetData.getUser() + " CareTrackerEvent " + imgTimeStamp + ".jpg";
             File fileMetadata = new File();
             fileMetadata.setName(filename);
+            String pageToken = null;
+            FileList result = mService.files().list()
+                    .setQ("mimeType='application/vnd.google-apps.folder' and sharedWithMe and name contains 'CareTrackerApp'")
+                    .setSpaces("drive")
+                    .setFields("nextPageToken, files(id, name)")
+                    .setPageToken(pageToken)
+                    .execute();
+            String sharedWithMe = null;
+            for (File file : result.getFiles()) {
+                sharedWithMe = file.getId();
+            }
+            fileMetadata.setParents(Collections.singletonList(sharedWithMe));
             FileContent fileContent = new FileContent("image/jpeg", imageToSave);
             File image = mService.files().create(fileMetadata, fileContent)
                     .setFields("id")
@@ -227,7 +239,6 @@ public class Expense extends AppCompatActivity {
                     .setRole("writer")
                     .setEmailAddress("care.tracker246@gmail.com");
             mService.permissions().create(image.getId(), userPermission).execute();
-
             String link = "https://drive.google.com/file/d/"
                     + image.getId()
                     + "/view?usp=sharing";

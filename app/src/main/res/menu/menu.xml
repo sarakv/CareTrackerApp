@@ -4,7 +4,8 @@
 
     <item
         android:id="@+id/action_addButton"
-        android:icon="@drawable/ic_add_white_24dp"
+        android:icon="@drawable/ic_add_white_48dp"
+
         android:title="@string/add_button"
         app:showAsAction="ifRoom" />
 

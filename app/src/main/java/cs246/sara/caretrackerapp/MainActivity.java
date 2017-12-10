@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-    static final int REQUEST_ABOUT_VIEW = 1004;
     static final int REQUEST_NEW_BUTTON = 1005;
     static final int REQUEST_MODIFY_BUTTON = 1006;
     static final int REQUEST_DATA = 1007;
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS, Scopes.PROFILE, SheetsScopes.DRIVE};
 
     //REPLACE WITH CHRISTINA'S PERMANENT SHEET ID
-    private static final String pointerSheetId = "1b326p7-twc-D7Opfxgl9wgfBOa0E6-JYwlWhgjf6wqA";
+    private static final String pointerSheetId = "1jnHQlufnxj19K-Nx8_7iKh2t_LWua6nT1-LDAhLSdus";
     String spreadsheetId = null;
 
     GoogleAccountCredential mCredential;
