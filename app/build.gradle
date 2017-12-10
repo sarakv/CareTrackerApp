@@ -45,4 +45,8 @@ dependencies {
 
     // This will take care of the Google Drive API (Pedro)
     compile 'com.google.android.gms:play-services-drive:11.6.0'
+
+    compile('com.google.apis:google-api-services-drive:v3-rev92-1.23.0'){
+        exclude group: 'com.google.code.findbugs'
+    }
 }

@@ -79,8 +79,8 @@ public class MainActivity extends AppCompatActivity
     static final String NUM_BUTTONS = "!NB#";
     static final String BUTTON_TAG = "!B#";
 
-    private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS, Scopes.PROFILE};
+    public static final String PREF_ACCOUNT_NAME = "accountName";
+    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS, Scopes.PROFILE, SheetsScopes.DRIVE};
 
     //REPLACE WITH CHRISTINA'S PERMANENT SHEET ID
     private static final String pointerSheetId = "1b326p7-twc-D7Opfxgl9wgfBOa0E6-JYwlWhgjf6wqA";
@@ -93,9 +93,11 @@ public class MainActivity extends AppCompatActivity
 
     String displayName = "";
     private int rowNumber = 3;
+    private int code = 0;
     Menu mMenu = null;
 
     String[] vals = null;
+    SheetData mLastData = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -244,7 +246,18 @@ public class MainActivity extends AppCompatActivity
                             "This app requires Google Play Services. Please install " +
                                     "Google Play Services on your device and relaunch this app.";
                 } else {
-                    getResultsFromApi();
+                    switch(code) {
+                        case 0:
+                            getResultsFromApi();
+                            break;
+                        case 1:
+                            if (mLastData != null);
+                                sendActionToSheet(mLastData);
+                            break;
+                        case 2:
+                            new DownloadDisplayName().execute();
+                            break;
+                    }
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
@@ -261,7 +274,18 @@ public class MainActivity extends AppCompatActivity
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
-                    getResultsFromApi();
+                    switch (code) {
+                        case 0:
+                            getResultsFromApi();
+                            break;
+                        case 1:
+                            if (mLastData != null);
+                            sendActionToSheet(mLastData);
+                            break;
+                        case 2:
+                            new DownloadDisplayName().execute();
+                            break;
+                    }
                 }
                 break;
             case REQUEST_NEW_BUTTON:
@@ -297,6 +321,7 @@ public class MainActivity extends AppCompatActivity
                 + data.getLabel()
                 + ": "
                 + data.getDescription();
+        mLastData = data;
         new AlertDialog.Builder( MainActivity.this )
                 .setTitle("Confirm")
                 .setMessage("Sending action:\n" + message)
@@ -312,6 +337,7 @@ public class MainActivity extends AppCompatActivity
                         sendActionToSheet(data);
                     }
                 }).show();
+
     }
 
     @Override
@@ -550,6 +576,7 @@ public class MainActivity extends AppCompatActivity
                 return getCellDataFromApi(params[0], params[1]);
             } catch (Exception e) {
                 mLastError = e;
+                isCancelled = true;
                 cancel(true);
                 return null;
             }
@@ -584,9 +611,9 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onCancelled() {
-            isCancelled = true;
             mProgress.dismiss();
             if (mLastError != null) {
+                code = 0;
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
                     showGooglePlayServicesAvailabilityErrorDialog(
                             ((GooglePlayServicesAvailabilityIOException) mLastError)
@@ -625,7 +652,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private class DownloadDisplayName extends AsyncTask<Void, Void, String> {
-        ProgressDialog mProgress;
+        private ProgressDialog mProgress;
+        private Exception mLastError = null;
 
         @Override
         protected String doInBackground(Void... args) {
@@ -642,7 +670,7 @@ public class MainActivity extends AppCompatActivity
                         response += s;
                     }
                 } catch (Exception e) {
-                    displayName = "";
+                    mLastError = e;
                     cancel(true);
                     return null;
                 }
@@ -671,8 +699,7 @@ public class MainActivity extends AppCompatActivity
                     displayName = (String) obj.get("name");
                     MyPreferences.setString(MainActivity.this, DISPLAY_NAME, displayName);
                 } catch (JSONException e) {
-                    e.printStackTrace();
-                    displayName = "";
+                    mLastError = e;
                 }
             }
         }
@@ -680,6 +707,23 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onCancelled() {
             mProgress.dismiss();
+            if (mLastError != null) {
+                code = 2;
+                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
+                    showGooglePlayServicesAvailabilityErrorDialog(
+                            ((GooglePlayServicesAvailabilityIOException) mLastError)
+                                    .getConnectionStatusCode());
+                } else if (mLastError instanceof UserRecoverableAuthIOException) {
+                    startActivityForResult(
+                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
+                            REQUEST_AUTHORIZATION);
+                } else {
+                    mOutputText = "The following error occurred:\n"
+                            + mLastError.getMessage();
+                }
+            } else {
+                mOutputText = "Request cancelled.";
+            }
         }
     }
 
@@ -751,6 +795,7 @@ public class MainActivity extends AppCompatActivity
         protected void onCancelled() {
             mProgress.dismiss();
             if (mLastError != null) {
+                code = 1;
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
                     showGooglePlayServicesAvailabilityErrorDialog(
                             ((GooglePlayServicesAvailabilityIOException) mLastError)
