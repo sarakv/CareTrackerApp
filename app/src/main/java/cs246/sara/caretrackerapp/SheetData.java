@@ -1,5 +1,9 @@
 package cs246.sara.caretrackerapp;
 
+/**
+ * Groups information necessary to send data to Google Sheets.
+ * Facilitates using gson to store the data.
+ */
 public class SheetData {
     private String user;
     private String timestamp;
@@ -13,6 +17,16 @@ public class SheetData {
         //intentionally empty for Gson compatibility
     }
 
+    /**
+     * Initializes the data to be sent
+     * @param user the user name
+     * @param timestamp the timestamp
+     * @param label the entry name
+     * @param description the entry description
+     * @param saidToClient what was said to the client
+     * @param clientSaid what the client said
+     * @param imgLink the link to an associated image
+     */
     public SheetData(String user, String timestamp, String label, String description,
                      String saidToClient, String clientSaid, String imgLink) {
         this.user = user;
@@ -24,15 +38,24 @@ public class SheetData {
         this.imgLink = imgLink;
     }
 
+    /**
+     * @return An array of the information to be sent
+     */
     public String[] getValues() {
         return toArray(user, timestamp, label, description, saidToClient, clientSaid, imgLink);
     }
 
+    /**
+     * Internal helper function. Returns an array of strings from individual objects
+     * @param vals the values to add to the array
+     * @return the array with the strings
+     */
     private String[] toArray(String... vals) {
         String[] values = vals;
         return values;
     }
 
+    // getters and setters
     public String getUser() {
         return user;
     }

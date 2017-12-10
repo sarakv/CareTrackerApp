@@ -26,17 +26,17 @@
         </activity>
         <activity
             android:name=".AddButtonActivity"
-            android:label="@string/add_button"
+            android:label="@string/title_add_button"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             />
-        <activity android:name=".Note"
+        <activity android:name=".ConversationActivity"
             android:label="@string/commTitle"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             />
-        <activity android:name=".Expense"
-            android:label="@string/title_expense"
+        <activity android:name=".EventReportActivity"
+            android:label="@string/title_event"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
 
@@ -44,6 +44,7 @@
 
         <activity
             android:name=".ModifyButtonActivity"
+            android:label="@string/title_modify"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             />

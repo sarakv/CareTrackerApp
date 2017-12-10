@@ -3,6 +3,9 @@ package cs246.sara.caretrackerapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+/**
+ * Provides functionality to access shared preferences information from any activity
+ */
 public class MyPreferences {
     /**
      * Determines the value of a string parameter

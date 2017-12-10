@@ -17,6 +17,9 @@ import com.jaredrummler.android.colorpicker.ColorPanelView;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 
+/**
+ * Allows the user to create a new button to automate sending log entries.
+ */
 public class AddButtonActivity extends AppCompatActivity implements ColorPickerDialogListener {
     ColorPanelView colorPreview = null;
 
@@ -24,7 +27,6 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_button);
-        setTitle(R.string.title_newAction);
         init();
     }
 
@@ -38,11 +40,21 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
 
     }
 
+    /**
+     * Helper function to hide the keyboard from the screen
+     * @param v a reference to the view (required)
+     */
     private void hideKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
+    /**
+     * Creates a button for the entry from the user-entered information
+     * @param label the entry name
+     * @param desc the entry description
+     * @param color the color to display
+     */
     private void createButton(String label, String desc, int color){
         int numButtons = MyPreferences.getInt(this, MainActivity.NUM_BUTTONS, 0);
         ButtonInfo newButtonInfo = new ButtonInfo();
@@ -58,10 +70,15 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
         MyPreferences.setInt(this, MainActivity.NUM_BUTTONS, numButtons);
     }
 
+    /**
+     * Initialize activity properties
+     */
     private void init() {
         colorPreview = (ColorPanelView) findViewById(R.id.color_preview);
         colorPreview.setColor(ContextCompat.getColor(this, R.color.defaultColor));
         View desc = findViewById(R.id.user_description);
+
+        // set a listener to hide the keyboard when the user presses enter
         desc.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -78,6 +95,8 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
                 return false;
             }
         });
+
+        // hide the keyboard if user clicks outside
         desc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -88,11 +107,21 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
         });
     }
 
+    /**
+     * Listener for color selection. Hides the keyboard and stores the color selection once the user
+     * has picked.
+     * @param v a reference to the view (required)
+     */
     public void onColorPickListener(View v) {
         hideKeyboard(v);
         ColorPickerDialog.newBuilder().setColor(colorPreview.getColor()).show(AddButtonActivity.this);
     }
 
+    /**
+     * onClick listener for the ok button. Creates the log entry button as long the user provided
+     * information
+     * @param v a reference to the view (required)
+     */
     public void onOkListener(View v) {
         final String newButtonName = ((EditText) findViewById(R.id.user_label)).getText().toString();
         final String newButtonDesc = ((EditText) findViewById(R.id.user_description)).getText().toString();
@@ -117,16 +146,30 @@ public class AddButtonActivity extends AppCompatActivity implements ColorPickerD
         }
     }
 
+    /**
+     * onClick listener for the cancel button. Returns to MainActivity.
+     * @param v a reference to the view (required)
+     */
     public void onCancelListener(View v) {
         // Return to MainActivity
         setResult(RESULT_CANCELED);
         finish();
     }
 
+    /**
+     * onClick listener for the layout containing the user input. Allows clicking on the layout
+     * to show the keyboard and let the user type.
+     * @param v a reference to the view (required)
+     */
     public void onLabelLayoutClick(View v) {
         findViewById(R.id.user_label).performClick();
     }
 
+    /**
+     * onClick listener for the layout containing the user input. Allows clicking on the layout
+     * to show the keyboard and let the user type.
+     * @param v a reference to the view (required)
+     */
     public void onDescLayoutClick(View v) {
         findViewById(R.id.user_description).performClick();
     }

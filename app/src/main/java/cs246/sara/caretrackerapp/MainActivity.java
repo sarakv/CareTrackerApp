@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks, View.OnClickListener,
     View.OnLongClickListener {
 
+    // Initialize request constants
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -73,6 +75,8 @@ public class MainActivity extends AppCompatActivity
     static final int REQUEST_NEW_BUTTON = 1005;
     static final int REQUEST_MODIFY_BUTTON = 1006;
     static final int REQUEST_DATA = 1007;
+
+    // Initialize shared preferences default keys
     static final String SHEET_DATA = "!SD#";
     static final String MODIFY_ID = "!MID#";
     static final String DISPLAY_NAME = "!DN#";
@@ -80,29 +84,28 @@ public class MainActivity extends AppCompatActivity
     static final String SPREADSHEET_ID = "!SID#";
     static final String NUM_BUTTONS = "!NB#";
     static final String BUTTON_TAG = "!B#";
+    static final String PREF_ACCOUNT_NAME = "accountName";
 
-    public static final String PREF_ACCOUNT_NAME = "accountName";
+    // Initialize Google API permission scopes
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS, Scopes.PROFILE, SheetsScopes.DRIVE};
 
-    //REPLACE WITH CHRISTINA'S PERMANENT SHEET ID
+    // Initialize ID of the Google Sheet
     private static final String pointerSheetId = "1jnHQlufnxj19K-Nx8_7iKh2t_LWua6nT1-LDAhLSdus";
-    String spreadsheetId = null;
 
-    GoogleAccountCredential mCredential;
-    String mOutputText;
+    // Initialize member variables
+    private int code = 0;                        // task code for handling background task results
+    private int rowNumber = 2;                   // the row to write to on the Google Sheet
+    private int dummy_id = 123456789;            // dummy id for example button in tutorial
+    private String spreadsheetId = null;         // the spreadsheet to be modified
+    private String displayName = "";             // the user name
+    private String[] vals = null;                // the array of values to write to the Google Sheet
 
-    LinearLayout buttonsLayout = null;
+    private SheetData mLastData = null;          // reference to the last data sent (or attempted)
 
-    String displayName = "";
-    private int rowNumber = 3;
-    private int code = 0;
-    Menu mMenu = null;
-
-    String[] vals = null;
-    SheetData mLastData = null;
-
-    int dummy_id = 123456789;
-    Button dummy_button = null;
+    private Button dummy_button = null;          // example button to show during tutorial
+    private Menu mMenu = null;                   // the options menu reference
+    private GoogleAccountCredential mCredential; // the user credentials
+    private LinearLayout buttonsLayout = null;   // layout where user created buttons will be shown
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,47 +114,13 @@ public class MainActivity extends AppCompatActivity
         init();
     }
 
-    /**
-     * The About AlertDialog
-     */
-    public void aboutDialog() {
-        // Start the Alert Dialog
-        AlertDialog.Builder about = new AlertDialog.Builder(this);
-
-        // Set The alert box
-        about.setTitle("About")
-             .setMessage("This app was created by Sara Olivero, Scott Tolman and Pedro Lago." +
-                     "It is designed to help Christina and Tom during their day")
-             .setCancelable(true)
-             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                 @Override
-                 public void onClick(DialogInterface dialog, int which) {
-                     // Close the alert
-                 }
-             });
-        // Display the alert
-        AlertDialog alertDialog = about.create();
-        alertDialog.show();
-
-    }
-
-    public void onAddNoteListener(View v) {
-        Intent intent = new Intent(this, Note.class);
-        startActivityForResult(intent, REQUEST_DATA);
-    }
-
-    public void onAddExpenseListener(View v) {
-        Intent intent = new Intent(this, Expense.class);
-        startActivityForResult(intent, REQUEST_DATA);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         mMenu = menu;
-        if (spreadsheetId == null) {
+        if (spreadsheetId == null) { // Hide options if not logged in
             mMenu.findItem(R.id.action_addButton).setVisible(false);
             mMenu.findItem(R.id.action_signOut).setVisible(false);
         }
@@ -169,7 +138,6 @@ public class MainActivity extends AppCompatActivity
                 restoreButtons();
                 break;
             case R.id.action_about:
-                // Alert dialog for the About information
                 aboutDialog();
                 break;
             case R.id.action_signOut:
@@ -243,11 +211,14 @@ public class MainActivity extends AppCompatActivity
         switch(requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
-                    mOutputText =
+                    String outputText =
                             "This app requires Google Play Services. Please install " +
                                     "Google Play Services on your device and relaunch this app.";
+                    Toast.makeText(MainActivity.this,
+                            outputText,
+                            Toast.LENGTH_SHORT).show();
                 } else {
-                    switch(code) {
+                    switch(code) { // determine which task triggered this and resume it
                         case 0:
                             getResultsFromApi();
                             break;
@@ -274,7 +245,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case REQUEST_AUTHORIZATION:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) { // determine which task triggered this and resume it
                     switch (code) {
                         case 0:
                             getResultsFromApi();
@@ -293,10 +264,18 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == RESULT_OK) {
                     spreadsheetId = MyPreferences.getString(this, SPREADSHEET_ID, null);
                     updateUI(spreadsheetId != null);
+                } else {
+                    Toast.makeText(MainActivity.this,
+                            "New entry button creation cancelled...",
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_MODIFY_BUTTON:
-                // intentionally empty
+                if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(MainActivity.this,
+                            "Modify entry button cancelled...",
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
             case REQUEST_DATA:
                 if (resultCode == RESULT_OK) {
@@ -304,25 +283,40 @@ public class MainActivity extends AppCompatActivity
                     Gson gson = new Gson();
                     SheetData sheetData = gson.fromJson(dataJson, SheetData.class);
                     sendActionToSheet(sheetData);
+                } else if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(MainActivity.this,
+                            "Data not sent.",
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
         }
     }
 
+    /**
+     * Callback for when a user-created log entry button is clicked. Prompts to send the associated
+     * log entry information to the Google Sheet.
+     * @param v the view for the button that was clicked (required)
+     */
     @Override
     public void onClick(View v) {
+        // Obtain log entry information
         final ButtonInfo info = (ButtonInfo) v.getTag();
+        // Get current timestamp
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.US);
+        // Gather data to send to Google Sheet
         final SheetData data = new SheetData(displayName, sdf.format(new Timestamp(System.currentTimeMillis())),
-        info.getLabel(), info.getDescription(), "", "", "");
+                info.getLabel(), info.getDescription(), "", "", "");
         final String message = data.getUser() + " :: "
                 + data.getTimestamp()
                 + "\n"
                 + data.getLabel()
                 + ": "
                 + data.getDescription();
+
         mLastData = data;
+
+        // Prompt for confirmation
         new AlertDialog.Builder( MainActivity.this )
                 .setTitle("Confirm")
                 .setMessage("Sending action:\n" + message)
@@ -338,9 +332,14 @@ public class MainActivity extends AppCompatActivity
                         sendActionToSheet(data);
                     }
                 }).show();
-
     }
 
+    /**
+     * Callback for when a user presses and hold a user-created button. Takes the user to the
+     * modify button screen.
+     * @param v a reference to the view of the button that was pressed (required)
+     * @return
+     */
     @Override
     public boolean onLongClick(View v) {
         Intent intent = new Intent(this, ModifyButtonActivity.class);
@@ -351,24 +350,33 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Initialize activity properties
+     */
     private void init() {
+        // Initialize user credentials
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+        // obtain reference of where to put user-created buttons
         buttonsLayout = (LinearLayout) findViewById(R.id.layout_buttons);
+
+        // set listener for sign-in button (cannot be done in XML)
         findViewById(R.id.button_signIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 v.setEnabled(false);
-                mOutputText = "";
                 getResultsFromApi();
                 v.setEnabled(true);
             }
         });
 
+        // restore selected account, user name, and spreadsheet id
         mCredential.setSelectedAccountName(MyPreferences.getString(this, PREF_ACCOUNT_NAME, null));
         displayName = MyPreferences.getString(this, DISPLAY_NAME, "");
         spreadsheetId = MyPreferences.getString(this, SPREADSHEET_ID, null);
+
+        // determine if we should be logged in already
         if (mCredential.getSelectedAccountName() != null) {
             if (spreadsheetId != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.US);
@@ -390,6 +398,50 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Shows the About dialog
+     */
+    public void aboutDialog() {
+        // Start the Alert Dialog
+        AlertDialog.Builder about = new AlertDialog.Builder(this);
+
+        // Set The alert box
+        about.setTitle("About")
+                .setMessage(R.string.about_text)
+                .setCancelable(true)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Close the alert
+                    }
+                });
+        // Display the alert
+        AlertDialog alertDialog = about.create();
+        alertDialog.show();
+    }
+
+    /**
+     * onClick Listener for the conversation button
+     * @param v a reference to the clicked view (required)
+     */
+    public void onConversationClickListener(View v) {
+        Intent intent = new Intent(this, ConversationActivity.class);
+        startActivityForResult(intent, REQUEST_DATA);
+    }
+
+    /**
+     * onClick Listener for the report event button
+     * @param v a reference to the clicked view (required)
+     */
+    public void onEventReportClickListener(View v) {
+        Intent intent = new Intent(this, EventReportActivity.class);
+        startActivityForResult(intent, REQUEST_DATA);
+    }
+
+    /**
+     * Sends information to the Google Sheet
+     * @param data the information to be sent
+     */
     private void sendActionToSheet(SheetData data) {
         vals = data.getValues();
         new ReadFromSheetTask(1, mCredential).execute("Sheet1!Z1:Z1", spreadsheetId);
@@ -408,26 +460,40 @@ public class MainActivity extends AppCompatActivity
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
         } else if (! isDeviceOnline()) {
-            mOutputText = "No network connection available.";
+            String outputText = "No network connection available.";
+            Toast.makeText(MainActivity.this,
+                    outputText,
+                    Toast.LENGTH_SHORT).show();
         } else {
             getSpreadSheetId();
         }
     }
 
+    /**
+     * Start the task to obtain the Google Sheet where data should be sent
+     */
     private void getSpreadSheetId() {
         new ReadFromSheetTask(mCredential).execute("Sheet1!A1:A1", pointerSheetId);
     }
 
+    /**
+     * Updates the UI to show the sign-in in button if necessary
+     * @param isLoggedIn
+     */
     private void updateUI(boolean isLoggedIn) {
         if (isLoggedIn) {
+            // show menu options for add and sign-out
             if (mMenu != null){
                 mMenu.findItem(R.id.action_addButton).setVisible(true);
                 mMenu.findItem(R.id.action_signOut).setVisible(true);
             }
             findViewById(R.id.layout_login).setVisibility(View.GONE);
             findViewById(R.id.layout_main).setVisibility(View.VISIBLE);
+
+            // restore all user-created buttons
             restoreButtons();
         } else {
+            // hide menu options for add and sign-out
             if (mMenu != null) {
                 mMenu.findItem(R.id.action_addButton).setVisible(false);
                 mMenu.findItem(R.id.action_signOut).setVisible(false);
@@ -437,40 +503,40 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Shows the tutorial to the user
+     * @param id id to the tutorial's example button
+     */
     private void showTutorial(int id) {
         final FancyShowCaseView mainShowCase = new FancyShowCaseView.Builder(this)
                 .title("Welcome to Care Tracker App\n" +
-                        "Automate sending reports to Christina by " +
-                        "tapping a button.")
+                        getString(R.string.main_showcase))
                 .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
                 .build();
         final FancyShowCaseView addShowCase = new FancyShowCaseView.Builder(this)
-                .title("Add a button by clicking the plus icon.")
+                .title(getString(R.string.add_showcase))
                 .focusCircleRadiusFactor(0.85)
                 .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
                 .build();
         final FancyShowCaseView buttonShowCase = new FancyShowCaseView.Builder(this)
-                .title("Tap on the button to send its associated information to Christina.")
+                .title(getString(R.string.button_showcase))
                 .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
                 .focusCircleRadiusFactor(0.85)
                 .focusOn(buttonsLayout.findViewById(id))
                 .build();
-
         final FancyShowCaseView modifyShowCase = new FancyShowCaseView.Builder(this)
-                .title("Press and hold down on a button to access the modify screen.\n" +
-                        "You can delete the button by accessing the modify screen.")
+                .title(getString(R.string.modify_showcase))
                 .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
                 .focusCircleRadiusFactor(0.85)
                 .focusOn(buttonsLayout.findViewById(id))
                 .build();
         final FancyShowCaseView convoShowCase = new FancyShowCaseView.Builder(this)
-                .title("Client Communication will allow you to record conversations with the client.")
+                .title(getString(R.string.convo_showcase))
                 .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
                 .focusOn(findViewById(R.id.commButton))
                 .build();
-
-        final FancyShowCaseView noteShowCase = new FancyShowCaseView.Builder(this)
-                .title("Add note will allow you to submit information about special events")
+        final FancyShowCaseView eventShowCase = new FancyShowCaseView.Builder(this)
+                .title(getString(R.string.event_showcase))
                 .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
                 .focusOn(findViewById(R.id.reportButton))
                 .build();
@@ -481,7 +547,8 @@ public class MainActivity extends AppCompatActivity
                 .add(buttonShowCase)
                 .add(modifyShowCase)
                 .add(convoShowCase)
-                .add(noteShowCase);
+                .add(eventShowCase);
+
         mQueue.setCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete() {
@@ -489,21 +556,28 @@ public class MainActivity extends AppCompatActivity
                 restoreButtons();
             }
         });
+
         mQueue.show();
     }
 
+    /**
+     * Restore all user-created buttons
+     */
     private void restoreButtons() {
+        // clear the layout first
         buttonsLayout.removeAllViews();
+        // obtain the number of buttons
         int numButtons = MyPreferences.getInt(this, NUM_BUTTONS, 0);
+        // if it's the first run, show the example button and run the tutorial
         if (MyPreferences.isFirstRun(MainActivity.this)) {
-            String dummyJson = getString(R.string.dummy_json);
+            String dummyJson = "{\"color\":-2457551,\"description\":\"practice\",\"id\":3,\"label\":\"example button\",\"params\":{\"gravity\":-1,\"weight\":0.0,\"bottomMargin\":0,\"endMargin\":-2147483648,\"leftMargin\":0,\"mMarginFlags\":12,\"rightMargin\":0,\"startMargin\":-2147483648,\"topMargin\":36,\"height\":-2,\"width\":-1}}";
             Gson gson = new Gson();
             dummy_button = gson.fromJson(dummyJson, ButtonInfo.class).getButton(MainActivity.this);
             dummy_button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             dummy_button.setId(dummy_id);
             buttonsLayout.addView(dummy_button);
             showTutorial(dummy_id);
-        } else {
+        } else { // restore user-created buttons
             for (int i = 0; i < numButtons; i++) {
                 String btnJson = MyPreferences.getString(this, BUTTON_TAG + i, null);
                 if (btnJson != null) {
@@ -607,6 +681,33 @@ public class MainActivity extends AppCompatActivity
         return (networkInfo != null && networkInfo.isConnected());
     }
 
+    /**
+     * Handles results from the ReadFromSheetTask depending on the caller
+     * @param callerID the id of the caller, to determine how to handle the result
+     * @param result the result obtained from the Google Sheet that was read
+     */
+    private void handleReadResult(int callerID, String result) {
+        switch (callerID) {
+            case 0: // getSpreadSheetId caller
+                spreadsheetId = result;
+                MyPreferences.setString(MainActivity.this, SPREADSHEET_ID, result);
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.US);
+                String timestamp = sdf.format(new Timestamp(System.currentTimeMillis()));
+                MyPreferences.setString(MainActivity.this, ID_DATE, timestamp );
+                updateUI(true);
+                new DownloadDisplayName().execute();
+                break;
+            case 1: // sendActionToSheet caller
+                rowNumber = Integer.parseInt(result);
+                new WriteToSheetTask(mCredential).execute(vals);
+                break;
+            default:
+        }
+    }
+
+    /**
+     * Implements functionality to obtain data from a Google Sheet
+     */
     private class ReadFromSheetTask extends AsyncTask<String, Void, String> {
         private com.google.api.services.sheets.v4.Sheets mService = null;
         private Exception mLastError = null;
@@ -614,6 +715,11 @@ public class MainActivity extends AppCompatActivity
         private int id;
         private ProgressDialog mProgress;
 
+        /**
+         * Initialize task with the account that will read the data. By default assumes
+         * the caller function is getSpreadSheetId
+         * @param credential the google account to use
+         */
         ReadFromSheetTask(GoogleAccountCredential credential) {
             id = 0;
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -625,6 +731,12 @@ public class MainActivity extends AppCompatActivity
                     .build();
         }
 
+        /**
+         * Initialize task with the account that will read the data
+         *
+         * @param callerID the id of the calling function
+         * @param credential the google account to use
+         */
         ReadFromSheetTask(int callerID, GoogleAccountCredential credential) {
             id = callerID;
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -636,6 +748,7 @@ public class MainActivity extends AppCompatActivity
                     .build();
         }
 
+        @Override
         protected String doInBackground(String... params) {
             try {
                 return getCellDataFromApi(params[0], params[1]);
@@ -643,10 +756,20 @@ public class MainActivity extends AppCompatActivity
                 mLastError = e;
                 isCancelled = true;
                 cancel(true);
+                Toast.makeText(MainActivity.this,
+                        "Failed to read from Google Sheet...",
+                        Toast.LENGTH_SHORT).show();
                 return null;
             }
         }
 
+        /**
+         * Obtains data from a single cell for the given spreadsheet id
+         * @param cell the cell to read
+         * @param sheetID the Google Sheet id
+         * @return the content read from the given cell in the Google Sheet
+         * @throws IOException if a reading error occurred
+         */
         private String getCellDataFromApi(String cell, String sheetID) throws IOException {
             ValueRange response = mService.spreadsheets().values()
                     .get(sheetID, cell)
@@ -688,34 +811,25 @@ public class MainActivity extends AppCompatActivity
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
                             REQUEST_AUTHORIZATION);
                 } else {
-                    mOutputText = "The following error occurred:\n"
+                    String outputText = "The following error occurred:\n"
                             + mLastError.getMessage();
+                    Toast.makeText(MainActivity.this,
+                            outputText,
+                            Toast.LENGTH_LONG).show();
                 }
             } else {
-                mOutputText = "Request cancelled.";
+                String outputText = "Reading request cancelled.";
+                Toast.makeText(MainActivity.this,
+                        outputText,
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void handleReadResult(int callerID, String result) {
-        switch (callerID) {
-            case 0:
-                spreadsheetId = result;
-                MyPreferences.setString(MainActivity.this, SPREADSHEET_ID, result);
-                SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.US);
-                String timestamp = sdf.format(new Timestamp(System.currentTimeMillis()));
-                MyPreferences.setString(MainActivity.this, ID_DATE, timestamp );
-                updateUI(true);
-                new DownloadDisplayName().execute();
-                break;
-            case 1:
-                rowNumber = Integer.parseInt(result);
-                new WriteToSheetTask(mCredential).execute(vals);
-                break;
-            default:
-        }
-    }
-
+    /**
+     * Implements functionality to obtain the user's display name from their Google Profile in order
+     * to associate it with the information sent to the Google Sheet.
+     */
     private class DownloadDisplayName extends AsyncTask<Void, Void, String> {
         private ProgressDialog mProgress;
         private Exception mLastError = null;
@@ -751,7 +865,6 @@ public class MainActivity extends AppCompatActivity
         protected void onPreExecute() {
             mProgress = new ProgressDialog(MainActivity.this);
             mProgress.setMessage("Obtaining profile name...");
-            // Initialize credentials and service object.
             mProgress.show();
         }
 
@@ -783,20 +896,33 @@ public class MainActivity extends AppCompatActivity
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
                             REQUEST_AUTHORIZATION);
                 } else {
-                    mOutputText = "The following error occurred:\n"
+                    String outputText = "The following error occurred:\n"
                             + mLastError.getMessage();
+                    Toast.makeText(MainActivity.this,
+                            outputText,
+                            Toast.LENGTH_LONG).show();
                 }
             } else {
-                mOutputText = "Request cancelled.";
+                String outputText = "Obtain user namne reuest cancelled.";
+                Toast.makeText(MainActivity.this,
+                        outputText,
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+    /**
+     * Implements functionality to write log entry data to the Google Sheet
+     */
     private class WriteToSheetTask extends AsyncTask<String, Void, Void> {
         private com.google.api.services.sheets.v4.Sheets mService = null;
         private Exception mLastError = null;
         private ProgressDialog mProgress;
 
+        /**
+         * Initialize task with the account that will send the data.
+         * @param credential the google account to use
+         */
         WriteToSheetTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
@@ -807,17 +933,28 @@ public class MainActivity extends AppCompatActivity
                     .build();
         }
 
+        @Override
         protected Void doInBackground(String... params) {
             try {
                 return writeRowDataToApi(params);
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
+                Toast.makeText(MainActivity.this,
+                        "Failed to write to Google Sheet...",
+                        Toast.LENGTH_SHORT).show();
                 return null;
             }
         }
 
+        /**
+         * Writes row data to Google Sheet
+         * @param values the values for column in the row
+         * @return nothing
+         * @throws IOException if a writing error occurred
+         */
         private Void writeRowDataToApi(String... values) throws IOException {
+            // Prepare to send the data
             String rowRange = String.format(Locale.US, "Sheet1!A%d:G%d", rowNumber, rowNumber);
             List<List<Object>> vals = Arrays.asList(
                     Arrays.asList(
@@ -826,9 +963,13 @@ public class MainActivity extends AppCompatActivity
             );
             ValueRange data = new ValueRange();
             data.setValues(vals);
+
+            // Send the data
             mService.spreadsheets().values().update(spreadsheetId, rowRange, data)
                     .setValueInputOption(getString(R.string.value_input_option))
                     .execute();
+
+            // Prepare to update cell that indicates next row to write
             rowRange = "Sheet1!Z1:Z1";
             rowNumber++;
             vals = Arrays.asList(
@@ -836,11 +977,14 @@ public class MainActivity extends AppCompatActivity
                             (Object) String.format(Locale.US,"%d", rowNumber)
                     )
             );
+
+            // update cell that indicates next row to write
             data = new ValueRange();
             data.setValues(vals);
             mService.spreadsheets().values().update(spreadsheetId, rowRange, data)
                     .setValueInputOption(getString(R.string.value_input_option))
                     .execute();
+
             return null;
         }
 
@@ -870,11 +1014,16 @@ public class MainActivity extends AppCompatActivity
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
                             MainActivity.REQUEST_AUTHORIZATION);
                 } else {
-                    //mOutputText.setText("The following error occurred:\n"
-                  //          + mLastError.getMessage());
+                    String outputText = "The following error occurred:\n"
+                            + mLastError.getMessage();
+                    Toast.makeText(MainActivity.this,
+                            outputText,
+                            Toast.LENGTH_SHORT).show();
                 }
             } else {
-                //mOutputText.setText("Request cancelled.");
+                Toast.makeText(MainActivity.this,
+                        "Writing to Google Sheet request cancelled...",
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
