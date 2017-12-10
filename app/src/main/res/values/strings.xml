@@ -32,4 +32,5 @@
     <string name="about_text">This app was created by Sara Olivero, Scott Tolman and Pedro Lago. It is designed to help Christina and Tom during their day.</string>
     <string name="cameraTitle">Receipt</string>
     <string name="image_preview">Preview</string>
+    <string name="dummy_json">{\"color\":-2457551,\"description\":\"practice\",\"id\":3,\"label\":\"example button\",\"params\":{\"gravity\":-1,\"weight\":0.0,\"bottomMargin\":0,\"endMargin\":-2147483648,\"leftMargin\":0,\"mMarginFlags\":12,\"rightMargin\":0,\"startMargin\":-2147483648,\"topMargin\":36,\"height\":-2,\"width\":-1}}</string>
 </resources>

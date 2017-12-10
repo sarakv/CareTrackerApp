@@ -56,6 +56,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import me.toptas.fancyshowcase.FancyShowCaseQueue;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.OnCompleteListener;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -98,15 +101,13 @@ public class MainActivity extends AppCompatActivity
     String[] vals = null;
     SheetData mLastData = null;
 
+    int dummy_id = 123456789;
+    Button dummy_button = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         init();
     }
 
@@ -164,7 +165,8 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(new Intent(this, AddButtonActivity.class), REQUEST_NEW_BUTTON);
                 break;
             case R.id.action_tutorial:
-                //TODO
+                MyPreferences.setFirstRun(MainActivity.this, true);
+                restoreButtons();
                 break;
             case R.id.action_about:
                 // Alert dialog for the About information
@@ -435,20 +437,84 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void showTutorial(int id) {
+        final FancyShowCaseView mainShowCase = new FancyShowCaseView.Builder(this)
+                .title("Welcome to Care Tracker App\n" +
+                        "Automate sending reports to Christina by " +
+                        "tapping a button.")
+                .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
+                .build();
+        final FancyShowCaseView addShowCase = new FancyShowCaseView.Builder(this)
+                .title("Add a button by clicking the plus icon.")
+                .focusCircleRadiusFactor(0.85)
+                .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
+                .build();
+        final FancyShowCaseView buttonShowCase = new FancyShowCaseView.Builder(this)
+                .title("Tap on the button to send its associated information to Christina.")
+                .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
+                .focusCircleRadiusFactor(0.85)
+                .focusOn(buttonsLayout.findViewById(id))
+                .build();
+
+        final FancyShowCaseView modifyShowCase = new FancyShowCaseView.Builder(this)
+                .title("Press and hold down on a button to access the modify screen.\n" +
+                        "You can delete the button by accessing the modify screen.")
+                .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
+                .focusCircleRadiusFactor(0.85)
+                .focusOn(buttonsLayout.findViewById(id))
+                .build();
+        final FancyShowCaseView convoShowCase = new FancyShowCaseView.Builder(this)
+                .title("Client Communication will allow you to record conversations with the client.")
+                .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
+                .focusOn(findViewById(R.id.commButton))
+                .build();
+
+        final FancyShowCaseView noteShowCase = new FancyShowCaseView.Builder(this)
+                .title("Add note will allow you to submit information about special events")
+                .titleSize(14, TypedValue.COMPLEX_UNIT_SP)
+                .focusOn(findViewById(R.id.reportButton))
+                .build();
+
+        FancyShowCaseQueue mQueue = new FancyShowCaseQueue()
+                .add(mainShowCase)
+                .add(addShowCase)
+                .add(buttonShowCase)
+                .add(modifyShowCase)
+                .add(convoShowCase)
+                .add(noteShowCase);
+        mQueue.setCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete() {
+                MyPreferences.setFirstRun(MainActivity.this, false);
+                restoreButtons();
+            }
+        });
+        mQueue.show();
+    }
+
     private void restoreButtons() {
         buttonsLayout.removeAllViews();
         int numButtons = MyPreferences.getInt(this, NUM_BUTTONS, 0);
+        if (MyPreferences.isFirstRun(MainActivity.this)) {
+            String dummyJson = getString(R.string.dummy_json);
+            Gson gson = new Gson();
+            dummy_button = gson.fromJson(dummyJson, ButtonInfo.class).getButton(MainActivity.this);
+            dummy_button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            dummy_button.setId(dummy_id);
+            buttonsLayout.addView(dummy_button);
+            showTutorial(dummy_id);
+        } else {
+            for (int i = 0; i < numButtons; i++) {
+                String btnJson = MyPreferences.getString(this, BUTTON_TAG + i, null);
+                if (btnJson != null) {
+                    Gson gson = new Gson();
+                    Button myButton = gson.fromJson(btnJson, ButtonInfo.class).getButton(MainActivity.this);
+                    myButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
 
-        for (int i = 0; i < numButtons; i++) {
-            String btnJson = MyPreferences.getString(this, BUTTON_TAG + i, null);
-            if (btnJson != null) {
-                Gson gson = new Gson();
-                Button myButton = gson.fromJson(btnJson, ButtonInfo.class).getButton(this);
-                myButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-
-                myButton.setOnClickListener(this);
-                myButton.setOnLongClickListener(this);
-                buttonsLayout.addView(myButton);
+                    myButton.setOnClickListener(this);
+                    myButton.setOnLongClickListener(this);
+                    buttonsLayout.addView(myButton);
+                }
             }
         }
     }

@@ -49,4 +49,5 @@ dependencies {
     compile('com.google.apis:google-api-services-drive:v3-rev92-1.23.0'){
         exclude group: 'com.google.code.findbugs'
     }
+    compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 }
