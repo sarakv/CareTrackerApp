@@ -10,14 +10,6 @@
 
 
     <TextView
-        android:id="@+id/expense_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_expense"
-        android:padding="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-
-    <TextView
         android:id="@+id/enterLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,7 +38,7 @@
     <EditText
         android:id="@+id/expenseDescription"
         android:layout_width="match_parent"
-        android:layout_height="123dp"
+        android:layout_height="160dp"
         android:background="@drawable/text_border"
         android:ems="10"
         android:gravity="top|start"

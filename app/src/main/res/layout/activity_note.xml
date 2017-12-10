@@ -9,14 +9,6 @@
     tools:context="cs246.sara.caretrackerapp.Note">
 
     <TextView
-        android:id="@+id/commTitle"
-        android:padding="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/commTitle"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-
-    <TextView
         android:id="@+id/commToClient"
         android:padding="8dp"
         android:layout_width="match_parent"
@@ -26,14 +18,14 @@
 
     <EditText
         android:id="@+id/cTOclient"
-        android:background="@drawable/text_border"
-        android:padding="8dp"
         android:layout_width="match_parent"
-        android:layout_height="131dp"
+        android:layout_height="150dp"
+        android:background="@drawable/text_border"
         android:ems="10"
         android:gravity="top|start"
         android:hint="@string/toClientLabelHint"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:padding="8dp" />
 
     <TextView
         android:id="@+id/commFromClient"
@@ -45,14 +37,14 @@
 
     <EditText
         android:id="@+id/cFROMclient"
-        android:background="@drawable/text_border"
-        android:padding="8dp"
         android:layout_width="match_parent"
-        android:layout_height="131dp"
+        android:layout_height="150dp"
+        android:background="@drawable/text_border"
         android:ems="10"
         android:gravity="top|start"
         android:hint="@string/fromClientLabelHint"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:padding="8dp" />
 
     <LinearLayout
         android:padding="8dp"
